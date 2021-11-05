@@ -1,0 +1,77 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set class = 3 %} 
+	{% set all = 4 %}
+	{% set id = random(50000)*random(50000) %}
+
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %}
+	{% set page_direction = theme_options.get( 'page_direction' ) %} {% set language_id = config.get( 'config_language_id' ) %} 
+
+	<div class="filter-product">
+		<div class="filter-tabs">
+			<div class="bg-filter-tabs"><div class="bg-filter-tabs2 clearfix">
+			<ul id="tab{{ id }}">
+				{% set i = 0 %} {% for product_tab in module['content']['products_tabs'] %} 
+					<li {% if i == 0 %}class="active"{% endif %}><a href="#pko{{ id }}-{{ i }}">{{ product_tab['name'] }}</a></li>
+				{% set i = i + 1 %} {% endfor %} 
+			</ul>
+			</div></div>
+		</div>
+		
+		<div class="tab-content clearfix">
+			{% set s = 0 %} {% for product_tab in module['content']['products_tabs'] %} 
+			<div class="tab-pane {% if (s == 0) %} {{ 'active' }} {% endif %}" id="pko{{ id~'-'~s }}">
+				<!-- Carousel nav -->
+				<a class="next-button" href="#myCarousel{{ id~'-'~s }}" id="myCarousel{{ id~'-'~s }}_next"><span></span></a>
+				<a class="prev-button" href="#myCarousel{{ id~'-'~s }}" id="myCarousel{{ id~'-'~s }}_prev"><span></span></a>
+				
+				<script type="text/javascript">
+				$(document).ready(function() {
+				  var owl{{ id ~ '_' ~ s }} = $(".filter-product #myCarousel{{ id~'-'~s }} .carousel-inner");
+					
+				  $("#myCarousel{{ id~'-'~s }}_next").click(function(){
+				      owl{{ id ~ '_' ~ s }}.trigger('owl.next');
+				      return false;
+				    })
+				  $("#myCarousel{{ id~'-'~s }}_prev").click(function(){
+				      owl{{ id ~ '_' ~ s }}.trigger('owl.prev');
+				      return false;
+				  });
+				    
+				  owl{{ id ~ '_' ~ s }}.owlCarousel({
+				  	  slideSpeed : 500,
+				      singleItem:true,
+				      {% if (page_direction[language_id] == 'RTL') %} 
+				      direction: 'rtl'
+				      {% endif %} 
+				   });
+				});
+				</script>
+				
+				<div class="box-product">
+					<div id="myCarousel{{ id~'-'~s }}" class="carousel slide">
+						<!-- Carousel items -->
+						<div class="carousel-inner">
+							{% set i = 0 %} {% set row_fluid = 0 %} {% for product in product_tab['products'] %} {% set row_fluid = row_fluid + 1 %} 
+				    			{% if (i == 0) %} {{ '<div class="active item"><div class="product-grid"><div class="row">' }} {% endif %} 
+				    			{% set r=row_fluid-(row_fluid/all)|round(0, 'floor')*all %} {% if (row_fluid>all and r == 1) %} {{ '</div></div></div><div class="item"><div class="product-grid"><div class="row">' }} {% else %} {% set r=row_fluid-(row_fluid/row)|round(0, 'floor')*row %} {% if (row_fluid>row and r == 1) %} {{ '</div><div class="row">' }} {% endif %} {% endif %} 
+				    			<div class="col-sm-{{ class }} col-xs-6 {% if (class == 2) %} {{ 'col-md-25 col-lg-2 col-sm-3 ' }} {% endif %} {% if (class == 2 and r == 0) %} {{ 'hidden-md hidden-sm' }} {% endif %} {% if (class == 2 and r == 5) %} {{ 'hidden-sm' }} {% endif %} {% if (class == 25) %} {{ 'col-md-25 col-lg-25 col-sm-3 ' }} {% endif %} {% if (class == 25 and r == 0) %} {{ 'hidden-sm' }} {% endif %}">
+				    				{% include 'fastor/template/new_elements/product.twig' %}
+				    			</div>
+							{% set i = i + 1 %} {% endfor %} 
+							{% if (i > 0) %} {{ '</div></div></div>' }} {% endif %} 
+						</div>
+					</div>
+				</div>
+			</div>
+			{% set s = s + 1 %} {% endfor %} 
+		</div>
+	</div>
+	 
+	<script type="text/javascript">
+	$('#tab{{ id }} a').click(function (e) {
+	  e.preventDefault();
+	  $(this).tab('show');
+	})
+	</script>
+{% endif %}

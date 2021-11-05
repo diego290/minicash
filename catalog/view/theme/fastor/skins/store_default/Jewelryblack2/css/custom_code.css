@@ -1,0 +1,8 @@
+.header-type-7 #top .pattern > .container { padding-top: 15px; }
+
+@media (max-width: 767px) {
+ .header-type-7 #top .pattern > .container { padding-top: 5px; }
+}
+
+.megamenu-type-32 ul.megamenu > li > a { height: 51px; }
+.megamenu-type-32 .megamenuToogle-wrapper .megamenuToogle-pattern > .container { padding-bottom: 10px !important; }

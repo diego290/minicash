@@ -1,0 +1,210 @@
+{% if habilitado %}
+<style id="outside"> #payment { display: none; } </style>
+<style>
+  #payment label { width: 100% !important; white-space: nowrap !important; font-weight: 600 !important; }
+  @media only screen and (max-device-width: 767px) {
+    #payment label, #payment input[type="text"], #payment select { font-size: 1.2em !important; }
+  }
+  @media only screen and (max-width: 460px) {
+    #payment .col-xs-4 { width: 100% !important; margin-top: 5px !important; }
+  }
+  @media only screen and (max-width: 767px) {
+    #payment .form-group { margin-bottom: 0px !important; }
+    #payment label { margin-top: 10px !important; margin-bottom: 10px !important; }
+    #payment .pull-left, #payment input[type="button"] { width: 100% !important; white-space: nowrap !important; text-overflow: ellipsis !important; overflow: hidden !important; }
+  }
+</style>
+{% if ambiente %}
+<div class="alert alert-warning" role="alert">{{ text_sandbox }}</div>
+{% endif %}
+<div class="alert alert-info" role="alert">{{ text_info }}</div>
+{{ instrucoes }}
+<form class="form-horizontal" onkeypress="return event.keyCode != 13" id="payment">
+  <legend>{{ text_detalhes }}</legend>
+  <div class="form-group" id="bandeiras"></div>
+  <div class="form-group">
+    <div class="col-sm-4">
+      <label>{{ entry_cartao }}<span id='bandeira'></span>:</label>
+      <input type="text" name="cartao" value="" placeholder="" maxlength="19" autocomplete="off" class="form-control" inputmode="numeric" />
+    </div>
+    <div class="col-sm-4">
+      <label>{{ entry_nome }}</label>
+      <input type="text" name="nome" value="" placeholder="" maxlength="30" autocomplete="off" class="form-control" />
+    </div>
+    <div class="col-sm-4">
+      <label>{{ entry_valor }}</label>
+      <input type="text" name="valor" value="{{ total }}" class="form-control" disabled="disabled" />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-4" id="meses"></div>
+    <div class="col-sm-4" id="anos"></div>
+    <div class="col-sm-4">
+      <label>{{ entry_codigo }}</label>
+      <input type="text" name="codigo" value="" placeholder="" maxlength="4" autocomplete="off" class="form-control" inputmode="numeric" />
+    </div>
+  </div>
+  <div id="alerta">{% if alerta %}<div class="alert alert-warning" role="alert" id="warning">{{ alerta }}</div>{% endif %}</div>
+  <div class="buttons">
+    <div class="pull-left">
+      <input type="button" value="{{ texto_botao }}" id="button-confirm" class="btn btn-{{ estilo_botao }} btn-lg" data-loading-text="{{ text_carregando }}" />
+    </div>
+  </div>
+</form>
+<script type="text/javascript" src="catalog/view/theme/default/template/extension/payment/cielo_api/assets/js/jquery.loadingoverlay.min.js?v={{ versao }}"></script>
+<script type="text/javascript"><!--
+  function meses() {
+    json = {{ meses }};
+    html = '<label>{{ entry_validade_mes }}</label>';
+    html += '<select name="mes" class="form-control">';
+    html += '<option value="">{{ text_mes }}</option>';
+    for (i = 0; i <= json.length-1; i++) {
+      html += '<option value="' + json[i]['value'] + '">' + json[i]['text'] + '</option>';
+    }
+    html += '</select>';
+    $('#meses').html(html);
+  };
+  meses();
+  function anos() {
+    json = {{ anos }};
+    html = '<label>{{ entry_validade_ano }}</label>';
+    html += '<select name="ano" class="form-control">';
+    html += '<option value="">{{ text_ano }}</option>';
+    for (i = 0; i <= json.length-1; i++) {
+      html += '<option value="' + json[i]['value'] + '">' + json[i]['text'] + '</option>';
+    }
+    html += '</select>';
+    $('#anos').html(html);
+  };
+  anos();
+  function bandeiras() {
+    json = {{ bandeiras }};
+    html = '';
+    for (i = 0; i <= json.length-1; i++) {
+      html += '<div class="col-xs-4 col-sm-3" style="min-width: 130px !important;">';
+      if (i == '0') {
+        html += '<input type="radio" name="bandeira" value="'+ json[i]['bandeira'] +'" checked />';
+        if (json[i]['bandeira'] == 'visa') {
+          $('#bandeira').html('VISA');
+        } else if (json[i]['bandeira'] == 'mastercard') {
+          $('#bandeira').html('MAESTRO');
+        } else if (json[i]['bandeira'] == 'elo') {
+          $('#bandeira').html('ELO');
+        }
+      }else{
+        html += '<input type="radio" name="bandeira" value="'+ json[i]['bandeira'] +'" />';
+      }
+      html += '<img alt="' + json[i]['titulo'] + '" title="' + json[i]['titulo'] + '" src="'+ json[i]['imagem'] +'" border="0" /> ';
+      html += '</div>';
+    }
+    $('#bandeiras').html(html);
+  };
+  bandeiras();
+  function transacao() {
+    $.ajax({
+      url: 'index.php?route=extension/payment/cielo_api_debito/transacao',
+      type: 'post',
+      data: $('#payment input[type="text"], #payment input[type="radio"]:checked, #payment select'),
+      dataType: 'json',
+      beforeSend: function() {
+        $.LoadingOverlay('show');
+        $('{{ container_botao }}').button('loading');
+        $('input').prop('disabled', true);
+        $('select').prop('disabled', true);
+        $('button').prop('disabled', true);
+      },
+      complete: function() {
+        $('{{ container_botao }}').button('reset');
+        $('input').prop('disabled', false);
+        $('select').prop('disabled', false);
+        $('button').prop('disabled', false);
+        $('#payment input[name="valor"]').prop('disabled', true);
+        $('#payment input[name="cartao"]').val('');
+        $('#payment input[name="nome"]').val('');
+        $('#payment select[name="mes"]').val('');
+        $('#payment select[name="ano"]').val('');
+        $('#payment input[name="codigo"]').val('');
+        $.LoadingOverlay('hide');
+      },
+      success: function(json) {
+        $.LoadingOverlay('hide');
+        if (json['error']) {
+          $('#alerta').html('<div class="alert alert-warning" role="alert" id="warning">'+json['error']+'</div>');
+        } else if (json['redirect']) {
+          $('#button-confirm').hide();
+          $('#alerta').html('<div class="alert alert-success" role="alert">{{ text_redirecionando }}</div>');
+          location.replace(json['redirect']);
+        } else {
+          $('#alerta').html('<div class="alert alert-warning" role="alert" id="warning">{{ error_configuracao }}</div>');
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status == 404 || jqXHR.status == 500 || errorThrown == 'Not Found') {
+          $('#alerta').html('<div class="alert alert-warning" role="alert" id="warning">{{ error_configuracao }}</div>');
+        }
+      }
+    });
+  };
+  function validar() {
+    var erros = 0;
+    var campos = {
+      cartao: '{{ error_cartao }}',
+      nome: '{{ error_nome }}',
+      mes: '{{ error_mes }}',
+      ano: '{{ error_ano }}',
+      codigo: '{{ error_codigo }}'
+    };
+
+    $('div #warning').each(function() { $(this).remove(); });
+    $('div .text-danger').each(function() { $(this).remove(); });
+    $('#payment input[type="text"], #payment select').removeClass('alert-danger');
+
+    $('#payment input[type="text"], #payment input[type="radio"]:checked, #payment select').each(function(){
+      for (var chave in campos) {
+        if ($(this).attr('name') == chave) {
+          if ($(this).attr('name') == 'cartao') {
+            if ($.trim($(this).val()).length < 13) {
+              $(this).toggleClass('alert-danger');
+              $(this).after('<div class="text-danger">'+campos[chave]+'</div>');
+              erros++;
+            } else {
+              $(this).removeClass('alert-danger');
+            }
+          } else if ($(this).attr('name') == 'codigo') {
+            if ($.trim($(this).val()).length !== 3) {
+              $(this).toggleClass('alert-danger');
+              $(this).after('<div class="text-danger">'+campos[chave]+'</div>');
+              erros++;
+            } else {
+              $(this).removeClass('alert-danger');
+            }
+          } else {
+            if ($.trim($(this).val()).length == 0) {
+              $(this).toggleClass('alert-danger');
+              $(this).after('<div class="text-danger">'+campos[chave]+'</div>');
+              erros++;
+            } else {
+              $(this).removeClass('alert-danger');
+            }
+          }
+        }
+      }
+    });
+
+    if (erros == 0) {
+      transacao();
+    } else {
+      $('{{ container_botao }}').button('loading');
+      $('{{ container_botao }}').button('reset');
+      return false;
+    };
+  };
+  if (self === top) {
+    var outside = document.getElementById('outside');
+    outside.parentNode.removeChild(outside);
+  }
+//--></script>
+<script type="text/javascript" src="catalog/view/theme/default/template/extension/payment/cielo_api/assets/js/debito.js?v={{ versao }}"></script>
+{% else %}
+<div class="alert alert-warning" role="alert">{{ error_bandeiras }}</div>
+{% endif %}

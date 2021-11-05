@@ -1,0 +1,189 @@
+{% if (theme_options.get( 'fixed_header' ) == 1) %} 
+<!-- HEADER
+	================================================== -->
+<div class="fixed-header-1 sticky-header">
+	<div class="background-header"></div>
+	<div class="slider-header">
+		<!-- Top of pages -->
+		<div id="top" class="{% if (theme_options.get( 'header_layout' ) == 1) %} {{ 'full-width' }} {% elseif (theme_options.get( 'header_layout' ) == 4) %} {{ 'fixed3 fixed2' }} {% elseif (theme_options.get( 'header_layout' ) == 3) %} {{ 'fixed2' }} {% else %} {{ 'fixed' }} {% endif %}">
+			<div class="background-top"></div>
+			<div class="background">
+				<div class="shadow"></div>
+				<div class="pattern">
+					{% if (theme_options.get( 'megamenu_type' ) == 4 or theme_options.get( 'megamenu_type' ) == 5 or theme_options.get( 'megamenu_type' ) == 6 or theme_options.get( 'megamenu_type' ) == 9 or theme_options.get( 'megamenu_type' ) == 14 or theme_options.get( 'megamenu_type' ) == 19 or theme_options.get( 'megamenu_type' ) == 29) %} 
+					<div class="container container-megamenu2">
+					{% endif %} 
+					
+					{% set menu9 = theme_options.getModules('menu') %}
+					{% if ( menu9|length > 0 ) %} 
+					     <div class="megamenu-background">
+					          <div class="">
+					               <div class="overflow-megamenu container">
+			 						{% if (menu9|length > 1) %} {{ '<div class="row mega-menu-modules">' }}{% endif %}
+			 						{% set i = 0 %}
+			 						 
+			 						{% for module in menu9 %} 
+			 						 {% if (i == 0 and menu9|length > 1) %} {{ '<div class="col-md-3">' }}{% endif %}
+			 						 {% if (i == 1 and menu9|length > 1) %} {{ '<div class="col-md-9">' }}{% endif %}
+			 							 {{ module }}
+			 							{% if (menu9|length > 1 and (i == 0 or i == 1)) %} {{ '</div>' }}{% endif %}
+			 							{% if (menu9|length > 1 and i == 1) %} {{ '</div>' }}{% endif %}
+			 							{% set i = i + 1 %}
+			 						{% endfor %} 
+               					</div>
+               				</div>
+               			</div>
+					{% else %} 
+						{{ menu }}
+					{% endif %}
+					
+					{% if (theme_options.get( 'megamenu_type' ) == 4 or theme_options.get( 'megamenu_type' ) == 5 or theme_options.get( 'megamenu_type' ) == 6 or theme_options.get( 'megamenu_type' ) == 9 or theme_options.get( 'megamenu_type' ) == 14 or theme_options.get( 'megamenu_type' ) == 19 or theme_options.get( 'megamenu_type' ) == 29) %} 
+					</div>
+					{% endif %} 
+					
+					
+					{% set menu92 = theme_options.getModules('menu2') %}
+					{% if ( menu92|length > 0 ) %} 
+					 {{ '<div class="overflow-menu2">' }}
+						{% for module in menu92 %} 
+							{{ module }}
+						{% endfor %}
+						{{ '</div>' }}
+					{% endif %} 
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %} 
+
+<!-- HEADER
+	================================================== -->
+<header class="header-type-16">
+	<div class="background-header"></div>
+	<div class="slider-header">
+		<!-- Top of pages -->
+		<div id="top" class="{% if (theme_options.get( 'header_layout' ) == 1) %} {{ 'full-width' }} {% elseif (theme_options.get( 'header_layout' ) == 4) %} {{ 'fixed3 fixed2' }} {% elseif (theme_options.get( 'header_layout' ) == 3) %} {{ 'fixed2' }} {% else %} {{ 'fixed' }} {% endif %}">
+			<div class="background-top"></div>
+			<div class="background">
+				<div class="shadow"></div>
+				<div class="pattern">
+				     <div class="top-bar">
+				          <div class="container">
+				               <div class="row">
+     				               <!-- Welcome text -->
+     				               <div class="col-sm-6 welcome-text">
+     				                    {% if (logged) %} 
+     				                         <a href="{{ logout }}"><b>{{ text_logout }}</b></a>
+     				                    {% else %} 
+     				               	     {% if (theme_options.get( 'welcome_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.html_entity_decode(theme_options.get( 'welcome_text', config.get( 'config_language_id' ) )) }} {% else %} {{ 'Welcome visitor you can <a href="' ~ login ~ '"><b>login</b></a> or <a href="' ~ register ~ '"><b>create an account</b></a>.' }} {% endif %} 
+     				               	{% endif %} 
+     				               </div>
+     				               
+     				               <div class="col-sm-6 overflow-currency-language">
+     					               {{ currency~language }} 
+     					          </div>
+					          </div>
+				          </div>
+				     </div>
+				     
+					<div class="container">
+						<div class="row">
+							<!-- Header Left -->
+							<div class="col-sm-4" id="header-left">
+							     
+							 {% set top_block = theme_options.getModules('top_block') %}
+							 {% if ( top_block|length > 0 ) %} 
+							 	{% for module in top_block %} 
+							 		{{ module }}
+							 	{% endfor %}
+							 {% endif %} 
+
+                                        <!-- Links -->
+                                        <ul class="menu">
+                                        	<li><a href="{{ wishlist }}" id="wishlist-total">{{ text_wishlist }}</a></li>
+                                        	<li><a href="{{ shopping_cart }}">{{ text_shopping_cart }}</a></li>
+                                        	<li><a href="{{ checkout }}">{{ text_checkout }}</a></li>
+                                        	{% if (logged) %} 
+                                        	<li><a href="{{ logout }}">{{ text_logout }}</a></li>
+                                        	{% endif %} 
+                                        </ul>
+							</div>
+							
+							<!-- Header Center -->
+							<div class="col-sm-4" id="header-center">		
+							     {% if (logo) %} 
+							     <!-- Logo -->
+							     <div class="logo"><a href="{{ home }}"><img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" /></a></div>
+							     {% endif %} 
+							</div>
+							
+							<!-- Header Right -->
+							<div class="col-sm-4" id="header-right">
+							     <a href="{{ account }}" class="my-account"><i class="fa fa-user"></i></a>
+								{{ cart }} 
+							</div>
+						</div>
+					</div>
+					
+					{% if (theme_options.get( 'megamenu_type' ) == 4 or theme_options.get( 'megamenu_type' ) == 5 or theme_options.get( 'megamenu_type' ) == 6 or theme_options.get( 'megamenu_type' ) == 9 or theme_options.get( 'megamenu_type' ) == 14 or theme_options.get( 'megamenu_type' ) == 19 or theme_options.get( 'megamenu_type' ) == 29) %} 
+					<div class="container container-megamenu2">
+					{% endif %} 
+					
+					{% set menu9 = theme_options.getModules('menu') %}
+					{% if ( menu9|length > 0 ) %} 
+					     <div class="megamenu-background">
+					          <div class="">
+					               <div class="overflow-megamenu container">
+										{% if (menu9|length > 1) %} {{ '<div class="row mega-menu-modules">' }}{% endif %}
+										{% set i = 0 %}
+										 
+										{% for module in menu9 %} 
+										 {% if (i == 0 and menu9|length > 1) %} {{ '<div class="col-md-3">' }}{% endif %}
+										 {% if (i == 1 and menu9|length > 1) %} {{ '<div class="col-md-9">' }}{% endif %}
+											 {{ module }}
+											{% if (menu9|length > 1 and (i == 0 or i == 1)) %} {{ '</div>' }}{% endif %}
+											{% if (menu9|length > 1 and i == 1) %} {{ '</div>' }}{% endif %}
+											{% set i = i + 1 %}
+										{% endfor %} 
+               					</div>
+               				</div>
+               			</div>
+					{% else %} 
+						{{ menu }}
+					{% endif %}
+					
+					{% if (theme_options.get( 'megamenu_type' ) == 4 or theme_options.get( 'megamenu_type' ) == 5 or theme_options.get( 'megamenu_type' ) == 6 or theme_options.get( 'megamenu_type' ) == 9 or theme_options.get( 'megamenu_type' ) == 14 or theme_options.get( 'megamenu_type' ) == 19 or theme_options.get( 'megamenu_type' ) == 29) %} 
+					</div>
+					{% endif %} 
+					
+					
+					{% set menu92 = theme_options.getModules('menu2') %}
+					{% if ( menu92|length > 0 ) %} 
+					 {{ '<div class="overflow-menu2">' }}
+						{% for module in menu92 %} 
+							{{ module }}
+						{% endfor %}
+						{{ '</div>' }}
+					{% endif %} 
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	{% set slideshow = theme_options.getModules('slideshow') %} 
+	 {% if (slideshow|length > 0) %} 
+	<!-- Slider -->
+	<div id="slider" class="{% if (theme_options.get( 'slideshow_layout' ) == 1) %} {{ 'full-width' }} {% elseif (theme_options.get( 'slideshow_layout' ) == 4) %} {{ 'fixed3 fixed2' }} {% elseif (theme_options.get( 'slideshow_layout' ) == 3) %} {{ 'fixed2' }} {% else %} {{ 'fixed' }} {% endif %}">
+		<div class="background-slider"></div>
+		<div class="background">
+			<div class="shadow"></div>
+			<div class="pattern">
+				{% for module in slideshow %} 
+				{{ module }} 
+				{% endfor %} 
+			</div>
+		</div>
+	</div>
+	{% endif %} 
+</header>

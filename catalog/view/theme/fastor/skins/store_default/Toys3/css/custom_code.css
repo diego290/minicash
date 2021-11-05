@@ -1,0 +1,11 @@
+ .megamenu-background > div { background-position: bottom left; }
+               .megamenu-type-4 #main .megamenu-background .vertical:hover .megamenu-wrapper {
+                    margin-top: 0px;
+               }
+.product-filter .options .button-group { padding-right: 0px; }
+.product-filter .options .product-compare:before { display: none; }
+
+.body-white .standard-body .full-width .product-filter { margin-top: -6px; }
+.product-filter .options .product-compare { padding-left: 23px; }
+.product-filter .list-options .sort:before { display: none; }
+.product-filter .list-options .limit:before { display: none; }

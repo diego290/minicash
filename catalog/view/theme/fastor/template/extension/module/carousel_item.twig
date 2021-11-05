@@ -1,0 +1,52 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+  {% set theme_options = registry.get('theme_options') %}
+  {% set config = registry.get('config') %}
+  {% set page_direction = theme_options.get( 'page_direction' ) %} {% set language_id = config.get( 'config_language_id' ) %}
+
+  {% set class = 3 %} {% set id = random(50000)*random(50000) %} {% set all = 4 %} {% set row = 4 %} 
+  <div class="box box-with-products box-carousel">
+    <!-- Carousel nav -->
+    <a class="next" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_next"><span></span></a>
+    <a class="prev" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_prev"><span></span></a>
+    
+    <script type="text/javascript">
+    $(document).ready(function() {
+      var owl{{ id }} = $(".box #myCarousel{{ id }} .carousel-inner");
+      
+      $("#myCarousel{{ id }}_next").click(function(){
+          owl{{ id }}.trigger('owl.next');
+          return false;
+        })
+      $("#myCarousel{{ id }}_prev").click(function(){
+          owl{{ id }}.trigger('owl.prev');
+          return false;
+      });
+        
+      owl{{ id }}.owlCarousel({
+          slideSpeed : 500,
+          singleItem:true,
+          {% if (page_direction[language_id] == 'RTL') %} 
+          direction: 'rtl'
+          {% endif %} 
+       });
+    });
+    </script>
+    
+    <div class="box-heading">{{ block_heading }}</div>
+    <div class="strip-line"></div>
+    <div class="clear"></div>
+    <div class="box-content products">
+      <div id="myCarousel{{ id }}" class="carousel slide">
+        <div class="carousel-inner">
+        {% set i = 0 %} 
+        {% for item in carousel_item %} 
+            <div class="item{% if (i == 0) %} {{ ' active' }} {% endif %}">
+              {{ item['content'] }} 
+            </div>
+            {% set i = i + 1 %} 
+        {% endfor %} 
+      </div>
+    </div>
+    </div>
+  </div>
+{% endif %}

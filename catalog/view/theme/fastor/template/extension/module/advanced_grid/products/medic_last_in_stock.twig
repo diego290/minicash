@@ -1,0 +1,63 @@
+{{ '<div class="box box-with-products box-no-advanced">' }}
+     {{ '<div class="box-heading">' }}
+          {{ module['content']['title'] }}
+     {{ '</div>' }}
+     {{ '<div class="strip-line"></div>' }}
+     {{ '<div class="clear"></div>' }}
+     {{ '<div class="box-content products">' }}
+           {{ '<div class="clearfix" style="clear: both"><div class="medic-last-in-stock">' }}
+                {% for product in module['content']['products'] %} 
+                     {{ '<div class="product clearfix row">' }}
+                          {{ '<div class="image col-sm-6 col-md-7 col-lg-8"><a href="' ~ product['href'] ~ '">' }}
+                          {% if (theme_options.get( 'lazy_loading_images' ) != '0') %}
+                              {{ '<img src="image/catalog/blank.gif" data-echo="' ~ product['thumb'] ~ '" alt="' ~ product['name'] ~ '" />' }}
+                          {% else %} 
+                              {{ '<img src="' ~ product['thumb'] ~ '" alt="' ~product['name'] ~ '" />' }}
+                          {% endif %}
+                          {{ '</a></div>' }} 
+                          
+                          {{ '<div class="right col-sm-6 col-md-5 col-lg-4">' }}
+                          
+                          {% if (theme_options.get( 'display_specials_countdown' ) == '1' and product['special']) %} 
+                              {% set countdown = random(5000)*random(50000) %} 
+                              {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %}
+                              {% set date_end = product_detail['date_end'] %}
+                              {% if (date_end != '0000-00-00' and date_end) %} 
+                                   <script>
+                                   $(function () {
+                                        var austDay = new Date();
+                                        austDay = new Date({{ theme_options.date("Y", theme_options.strtotime(date_end)) }}, {{ theme_options.date("m", theme_options.strtotime(date_end)) }} - 1, {{ theme_options.date("d", theme_options.strtotime(date_end)) }});
+                                        $('#countdown{{ countdown }}').countdown({until: austDay});
+                                   });
+                                   </script>
+                                   <div id="countdown{{ countdown }}" class="clearfix"></div>
+                              {% endif %} 
+                         {% endif %} 
+                          
+                          {{ '<div class="name"><a href="' ~ product['href'] ~ '">' ~ product['name'] ~ '</a></div>' }}
+                          {{ '<div class="price">' }}
+                              {% if (not product['special']) %}
+                               {{ product['price'] }}
+                              {% else %} 
+                               {{ product['special'] }}
+                              {% endif %}
+                          {{ '</div>' }}
+                          
+                          {% if (theme_options.get( 'display_add_to_cart' ) != '0') %}
+                               {% set enquiry = constant('false') %} {% if (config.get( 'product_blocks_module' ) != '') %} {% set enquiry = theme_options.productIsEnquiry(product['product_id']) %} {% endif %}
+                               {% if (enquiry is iterable) %} 
+                                    {{ '<a href="javascript:openPopup(\'' ~ enquiry['popup_module'] ~ '\', \''~product['product_id'] ~ '\')" class="button button-enquiry">' }}
+                                    {% if (enquiry['icon'] != '' and enquiry['icon_position'] == 'left') %} {{ '<img src="image/' ~ enquiry['icon']~ '" align="left" class="icon-enquiry" alt="Icon">' }} {% endif %}
+                                    {{ '<span class="text-enquiry">' ~ enquiry['block_name'] ~ '</span>' }}
+                                    {% if (enquiry['icon'] != '' and enquiry['icon_position'] == 'right') %} {{ '<img src="image/' ~ enquiry['icon']~ '" align="right" class="icon-enquiry" alt="Icon">' }} {% endif %}
+                                    {{ '</a>' }}
+                               {% else %} 
+                                   {{ '<a onclick="cart.add(\'' ~ product['product_id'] ~ '\');" class="button">' ~ button_cart ~ '</a>' }}
+                               {% endif %}
+                          {% endif %}
+                          {{ '</div>' }}
+                     {{ '</div>' }}
+                {% endfor %}
+           {{ '</div></div>' }}
+     {{ '</div>' }}
+{{ '</div>' }} 

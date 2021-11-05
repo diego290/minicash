@@ -1,0 +1,46 @@
+{% if (articles|length > 0) %} 
+    {% set index = 1 %}
+    {% for article in articles %}
+    <div class="post">
+        <div class="post-content">
+            {% if (article['gallery']|length > 0) %}
+                {% if (article['article_list_gallery_display'] == 'CLASSIC') %}
+                    <div class="post-media">
+                        {{ article['gallery'][0]['output'] }}
+                    </div>
+                {% endif %} 
+                {% if (article['article_list_gallery_display'] == 'SLIDER') %}
+                    <div class="post-media">
+                        <div class="media-slider">
+                        {% for gallery in article['gallery'] %}
+                            <div class="item">{{ gallery['output'] }}</div>
+                        {% endfor %} 
+                        </div>
+                    </div>
+                {% endif %} 
+            {% endif %} 
+            
+            <div class="tags">
+                 {% set s = 0 %}
+                 {% for tag in article['tags'] %} 
+                      {% if (s < 2) %}<a href="{{ tag['href'] }}">{{ tag['tag'] }}</a>{% endif %} 
+                 {% set s = s + 1 %} 
+                 {% endfor %} 
+            </div>
+            
+            <div class="date-published">{{ theme_options.date('d.m.Y', theme_options.strtotime(article['date_published'])) }}</div>
+            
+            <h2 class="post-title">
+                 <a href="{{ article['href'] }}">{{ article['title'] }}</a>
+            </h2>
+
+            <div class="post-description">
+                {{ article['description']}}
+            </div>
+            
+            <a href="{{ article['href'] }}" class="button-more">{{ button_read_more }}</a>
+        </div>       
+    </div>
+    {% set index = index + 1 %} 
+    {% endfor %} 
+{% endif %}

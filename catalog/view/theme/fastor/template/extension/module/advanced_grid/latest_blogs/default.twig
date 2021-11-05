@@ -1,0 +1,44 @@
+{% if (position == 'footer_bottom' or position == 'footer' or position == 'footer_top' or position == 'footer_left' or position == 'footer_right' or position == 'customfooter_top' or position == 'customfooter_bottom' or position == 'customfooter') %}
+     {{ '<h4>'~module['content']['title']~'</h4>' }}
+     {{ '<div class="strip-line"></div>' }}
+     
+     {{ '<div class="clearfix" style="clear: both"><div class="advanced-grid-latest-blogs">' }}
+      {% for article in module['content']['articles'] %} 
+           {{ '<div class="news clearfix">' }}
+                {{ '<div class="image">' }}
+                     {% if (article['thumb']) %}
+                         {{ '<a href="' ~ article['href'] ~ '" style="background-image: url(' ~ article['thumb'] ~ ');width: ' ~ module['content']['width'] ~ 'px;height: ' ~ module['content']['height'] ~ 'px"></a>' }}
+                     {% endif %}
+                {{ '</div>' }}
+                {{ '<div class="title"><a href="' ~ article['href'] ~ '">' ~ article['title'] ~ '</a></div>' }}
+                {% if (article['date_published']) %}
+                    {{ '<div class="article-date-added"><i class="fa fa-calendar"></i> ' ~ theme_options.date('m d Y', theme_options.strtotime(article['date_published'])) ~ '</div>' }}
+                {% endif %}
+           {{ '</div>' }}
+      {% endfor %}
+      {{ '</div></div>' }}
+{% else %} 
+     {{ '<div class="box">' }}
+          {{ '<div class="box-heading">' }}
+               {{ module['content']['title'] }}
+          {{ '</div>' }}
+          {{ '<div class="strip-line"></div>' }}
+          {{ '<div class="box-content">' }}
+                {{ '<div class="clearfix" style="clear: both"><div class="advanced-grid-latest-blogs">' }}
+                {% for article in module['content']['articles'] %} 
+                     {{ '<div class="news clearfix">' }}
+                          {{ '<div class="image">' }}
+                               {% if (article['thumb']) %}
+                                   {{ '<a href="' ~ article['href'] ~ '" style="background-image: url(' ~ article['thumb'] ~ ');width: ' ~ module['content']['width'] ~ 'px;height: ' ~ module['content']['height'] ~ 'px""></a>' }}
+                               {% endif %}
+                          {{ '</div>' }}
+                          {{ '<div class="title"><a href="' ~ article['href'] ~ '">' ~ article['title'] ~ '</a></div>' }}
+                          {% if (article['date_published']) %}
+                              {{ '<div class="article-date-added"><i class="fa fa-calendar"></i> ' ~ theme_options.date('m d Y', theme_options.strtotime(article['date_published'])) ~ '</div>' }}
+                          {% endif %}
+                     {{ '</div>' }}
+                {% endfor %}
+                {{ '</div></div>' }}
+          {{ '</div>' }}
+     {{ '</div>' }} 
+{% endif %}

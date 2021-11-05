@@ -1,0 +1,256 @@
+{{ header }} 
+{% set theme_options = registry.get('theme_options') %}
+{% set config = registry.get('config') %} 
+{% set background_status = constant('false') %}
+{% include 'fastor/template/new_elements/wrapper_top.twig' %}
+
+<div id="mfilter-content-container">
+  {% if (thumb or description) %} 
+  <div class="category-info clearfix">
+    {% if (thumb) %} 
+      <div class="image"><img src="{{ thumb }}" alt="{{ heading_title }}" /></div>
+    {% endif %} 
+    {% if (description) %} 
+      {{ description }} 
+    {% endif %} 
+  </div>
+  {% endif %} 
+  {% if (categories and theme_options.get('refine_search_style') != '2') %} 
+  <div class="refine_search_overflow text-center"><h2 class="refine_search">{{ text_refine }}</h2></div>
+  <div class="category-list{% if (theme_options.get('refine_search_style') == '1') %} {{ ' category-list-text-only' }} {% endif %}">
+    <div class="row">
+      
+   {% set class = 3 %} 
+   {% set row = 4 %} 
+   
+   {% if (theme_options.get( 'refine_search_number' ) == 2) %} {% set class = 62 %} {% endif %}
+   {% if (theme_options.get( 'refine_search_number' ) == 5) %} {% set class = 25 %} {% endif %}
+   {% if (theme_options.get( 'refine_search_number' ) == 3) %} {% set class = 4 %} {% endif %}
+   {% if (theme_options.get( 'refine_search_number' ) == 6) %} {% set class = 2 %} {% endif %}
+   
+   {% if (theme_options.get( 'refine_search_number' ) > 1) %} {% set row = theme_options.get( 'refine_search_number' ) %} {% endif %} 
+   
+    {% set row_fluid = 0 %} {% for category in theme_options.refineSearch() %} {% set row_fluid = row_fluid + 1 %} 
+      
+    {% if (theme_options.get('refine_search_style') != '1') %}
+      {% set width = 250 %}
+      {% set height = 250 %}
+      {% if (theme_options.get( 'refine_image_width' ) > 20) %} {% set width = theme_options.get( 'refine_image_width' ) %}{% endif %}
+      {% if (theme_options.get( 'refine_image_height' ) > 20) %} {% set height = theme_options.get( 'refine_image_height' ) %}{% endif %}
+      {% set model_tool_image = registry.get('model_tool_image') %}
+      {% if (category['thumb'] != '') %} 
+        {% set image = model_tool_image.resize(category['thumb'], width, height) %} 
+      {% else %} 
+        {% set image = model_tool_image.resize('no_image.jpg', width, height) %} 
+      {% endif %} 
+    {% endif %}
+    
+      {% set r=row_fluid-(row_fluid/row)|round(0, 'floor')*row %} {% if (row_fluid>row and r == 1) %} {{ '</div><div class="row">' }} {% endif %} 
+      <div class="col-sm-{{ class }} col-xs-6">
+        {% if (theme_options.get('refine_search_style') != '1') %} 
+        <a href="{{ category['href'] }}"><img src="{{ image }}" alt="{{ category['name'] }}" /></a>
+        {% endif %} 
+        <a href="{{ category['href'] }}">{{ category['name'] }}</a>
+      </div>
+    {% endfor %} 
+  </div>
+  </div>
+  {% endif %} 
+  {% if (products) %} 
+  {% set currently = theme_options.getCurrently() %}
+  <!-- Filter -->
+  <div class="product-filter clearfix">
+    <div class="options">
+      <div class="product-compare"><a href="{{ compare }}" id="compare-total">{{ text_compare }}</a></div>
+      
+      <div class="button-group display" data-toggle="buttons-radio">
+        <button id="grid" {% if (currently == 'grid') %} {{ 'class="active"' }} {% endif %} rel="tooltip" title="Grid" onclick="display('grid');"><i class="fa fa-th-large"></i></button>
+        <button id="list" {% if (currently != 'grid') %} {{ 'class="active"' }} {% endif %} rel="tooltip" title="List" onclick="display('list');"><i class="fa fa-th-list"></i></button>
+      </div>
+    </div>
+    
+    <div class="list-options">
+      <div class="sort">
+        <select onchange="location = this.value;">
+          {% for sorts in sorts %} 
+          {% if (sorts['value'] == sort ~ '-' ~ order) %} 
+          <option value="{{ sorts['href'] }}" selected="selected">{{ sorts['text'] }}</option>
+          {% else %} 
+          <option value="{{ sorts['href'] }}">{{ sorts['text'] }}</option>
+          {% endif %} 
+          {% endfor %} 
+        </select>
+      </div>
+      
+      <div class="limit">
+        <select onchange="location = this.value;">
+          {% for limits in limits %} 
+          {% if (limits['value'] == limit) %} 
+          <option value="{{ limits['href'] }}" selected="selected">{{ limits['text'] }}</option>
+          {% else %} 
+          <option value="{{ limits['href'] }}">{{ limits['text'] }}</option>
+          {% endif %} 
+          {% endfor %} 
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  {% if (currently != 'grid') %} 
+  <!-- Products list -->
+  <div class="product-list active">
+    {% for product in products %} 
+    <!-- Product -->
+    <div>
+      <div class="row">
+        <div class="image col-sm-3">
+          {% if (product['special'] and theme_options.get( 'display_text_sale' ) != '0') %} 
+            {% set text_sale = 'Sale' %}
+          {% if (theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) != '') %}
+            {% set text_sale = theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) %}
+          {% endif %} 
+            {% if (theme_options.get( 'type_sale' ) == '1') %} 
+            {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %}
+          {% set roznica_ceny = product_detail['price']-product_detail['special'] %}
+          {% set procent = roznica_ceny*100/product_detail['price'] %} 
+            <div class="sale">-{{ procent|round }}%</div>
+            {% else %} 
+            <div class="sale">{{ text_sale }}</div>
+            {% endif %} 
+          {% elseif (theme_options.get( 'display_text_new' ) != '0' and theme_options.isLatestProduct( product['product_id'] )) %} 
+             <div class="new">{% if (theme_options.get( 'new_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'new_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'New' }} {% endif %}</div>
+          {% endif %} 
+          
+          {% if (product['thumb']) %} 
+            {% if (theme_options.get( 'lazy_loading_images' ) != '0') %} 
+            <a href="{{ product['href'] }}"><img src="image/catalog/blank.gif" data-echo="{{ product['thumb'] }}" alt="{{ product['name'] }}" /></a>
+            {% else %} 
+            <a href="{{ product['href'] }}"><img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" /></a>
+            {% endif %} 
+          {% else %} 
+          <a href="{{ product['href'] }}"><img src="image/no_image.jpg" alt="{{ product['name'] }}" /></a>
+          {% endif %} 
+          
+          {% if (theme_options.get( 'display_specials_countdown' ) == '1' and product['special']) %} 
+            {% set countdown = random(5000) * random(50000) %} 
+             {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %}
+             {% set date_end = product_detail['date_end'] %}
+             {% if (date_end != '0000-00-00' and date_end) %} 
+                  <script>
+                  $(function () {
+                    var austDay = new Date();
+                    austDay = new Date({{ theme_options.date("Y", theme_options.strtotime(date_end)) }}, {{ theme_options.date("m", theme_options.strtotime(date_end)) }} - 1, {{ theme_options.date("d", theme_options.strtotime(date_end)) }});
+                    $('#countdown{{ countdown }}').countdown({until: austDay});
+                  });
+                  </script>
+                  <div id="countdown{{ countdown }}" class="clearfix"></div>
+                 {% endif %} 
+          {% endif %} 
+        </div>
+        
+        <div class="name-actions col-sm-4">
+             <div class="name"><a href="{{ product['href'] }}">{{ product['name'] }}</a></div>
+             {% if (theme_options.get( 'product_list_type' ) == '4') %} 
+               {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %} 
+               <div class="brand">{{ product_detail['manufacturer'] }}</div>
+             {% endif %} 
+             
+             {% if (product['price']) %} 
+          <div class="price">
+            {% if (not product['special']) %} 
+              {{ product['price'] }} 
+            {% else %} 
+              <span class="price-old">{{ product['price'] }}</span> <span class="price-new">{{ product['special'] }}</span>
+            {% endif %} 
+          </div>
+          {% endif %} 
+          
+          <ul>
+               {% if (theme_options.get( 'display_add_to_cart' ) != '0') %} 
+                    {% set enquiry = constant('false') %} {% if (config.get( 'product_blocks_module' ) != '') %} {% set enquiry = theme_options.productIsEnquiry(product['product_id']) %} {% endif %}
+                    {% if (enquiry is iterable) %} 
+                    <li><a href="javascript:openPopup('{{ enquiry['popup_module'] }}', '{{ product['product_id'] }}')" data-toggle="tooltip" data-original-title="{{ enquiry['block_name'] }}"><i class="fa fa-question"></i></a></li>
+                    {% else %} 
+                    <li><a onclick="cart.add('{{ product['product_id'] }}');" data-toggle="tooltip" data-original-title="{{ button_cart }}"><i class="fa fa-shopping-cart"></i></a></li>
+                    {% endif %} 
+               {% endif %} 
+               
+               {% if (theme_options.get( 'quick_view' ) == 1) %} 
+               <li class="quickview"><a href="index.php?route=product/quickview&amp;product_id={{ product['product_id'] }}" data-toggle="tooltip" data-original-title="{% if (theme_options.get( 'quickview_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.html_entity_decode(theme_options.get( 'quickview_text', config.get( 'config_language_id' ) )) }} {% else %} {{ 'Quickview' }} {% endif %}"><i class="fa fa-search"></i></a></li>
+               {% endif %} 
+          
+            {% if (theme_options.get( 'display_add_to_compare' ) != '0') %} 
+            <li><a onclick="compare.add('{{ product['product_id'] }}');" data-toggle="tooltip" data-original-title="{% if (theme_options.get( 'add_to_compare_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'add_to_compare_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'Add to compare' }} {% endif %}"><i class="fa fa-exchange"></i></a></li>
+            {% endif %} 
+            
+            {% if (theme_options.get( 'display_add_to_wishlist' ) != '0') %} 
+            <li><a onclick="wishlist.add('{{ product['product_id'] }}');" data-toggle="tooltip" data-original-title="{% if (theme_options.get( 'add_to_wishlist_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'add_to_wishlist_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'Add to wishlist' }} {% endif %}"><i class="fa fa-heart"></i></a></li>
+            {% endif %} 
+          </ul>
+        </div>
+        
+        <div class="desc col-sm-5">
+          <div class="description">{{ product['description'] }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %} 
+  </div>
+  {% endif %} 
+  
+  {% if (currently == 'grid') %} 
+  <!-- Products grid -->
+  
+ {% set class = 3 %} 
+ {% set row = 4 %} 
+ 
+ {% if (theme_options.get( 'product_per_pow2' ) == 6) %} {% set class = 2 %} {% endif %}
+ {% if (theme_options.get( 'product_per_pow2' ) == 5) %} {% set class = 25 %} {% endif %}
+ {% if (theme_options.get( 'product_per_pow2' ) == 3) %} {% set class = 4 %} {% endif %}
+ 
+ {% if (theme_options.get( 'product_per_pow2' ) > 1) %} {% set row = theme_options.get( 'product_per_pow2' ) %} {% endif %} 
+ 
+  <div class="product-grid active">
+    <div class="row">
+      {% set row_fluid = 0 %} {% for product in products %} {% set row_fluid = row_fluid + 1 %} 
+        {% set r=row_fluid-(row_fluid/row)|round(0, 'floor')*row %} {% if (row_fluid>row and r == 1) %} {{ '</div><div class="row">' }} {% endif %} 
+        <div class="col-sm-{{ class }} col-xs-6">
+            {% include 'fastor/template/new_elements/product.twig' %}
+        </div>
+      {% endfor %} 
+    </div>
+  </div>
+  {% endif %} 
+  
+  <div class="row pagination-results">
+    <div class="col-sm-6 text-left">{{ pagination }}</div>
+    <div class="col-sm-6 text-right">{{ results }}</div>
+  </div>
+  {% endif %} 
+  {% if (not categories and not products) %} 
+  <p style="padding-top: 30px">{{ text_empty }}</p>
+  <div class="buttons">
+    <div class="pull-right"><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+  </div>
+  {% endif %} 
+<script type="text/javascript"><!--
+function setCookie(key, value) {
+    var expires = new Date();
+    expires.setTime(expires.getTime() + (1 * 24 * 60 * 60 * 1000));
+    document.cookie = key + '=' + value + ';expires=' + expires.toUTCString();
+}
+
+function display(view) {
+  if (view == 'list') {
+    setCookie('display','list');
+    location.reload();
+  } else {
+    setCookie('display','grid');
+    location.reload();
+  }
+}
+//--></script> 
+</div>
+
+{% include 'fastor/template/new_elements/wrapper_bottom.twig' %}
+{{ footer }}

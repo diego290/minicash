@@ -1,0 +1,10 @@
+{{ header }} 
+{% include 'fastor/template/new_elements/wrapper_top.twig' %}
+
+{% if (text_error is defined) %}<p>{{ text_error }}</p>{% endif %} 
+<div class="buttons">
+  <div class="pull-right"><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+</div>
+  
+{% include 'fastor/template/new_elements/wrapper_bottom.twig' %}
+{{ footer }}

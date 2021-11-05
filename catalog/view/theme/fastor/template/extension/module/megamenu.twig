@@ -1,0 +1,305 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set config = registry.get('config') %}
+	{% set theme_options = registry.get('theme_options') %}
+	{% set page_direction = theme_options.get( 'page_direction' ) %} {% set language_id = config.get( 'config_language_id' ) %}
+	{% set id = random(5000)*random(500000) %} 
+
+	<div id="megamenu_{{ id }}" class="container-megamenu {% if (ustawienia['full_width'] != '1') %} {{ 'container' }} {% endif %} {% if (ustawienia['orientation'] == 1) %} {{ 'vertical' }} {% elseif (ustawienia['orientation'] == 2) %} {{ 'horizontal horizontal-type-2' }} {% elseif (ustawienia['orientation'] == 3) %} {{ 'horizontal horizontal-type-3' }} {% else %} {{ 'horizontal' }} {% endif %} {% if (ustawienia['display_on_mobile'] == 1) %} {{ ' mobile-disabled' }} {% endif %}">
+		{% if (ustawienia['orientation'] == 1) %} 
+		<div id="menuHeading">
+			<div class="megamenuToogle-wrapper">
+				<div class="megamenuToogle-pattern">
+					<div class="container">
+						{{ navigation_text }} 
+					</div>
+				</div>
+			</div>
+		</div>
+		{% else %} 
+		<div class="megaMenuToggle">
+			<div class="megamenuToogle-wrapper">
+				<div class="megamenuToogle-pattern">
+					<div class="container">
+						<div><span></span><span></span><span></span></div>
+						{{ navigation_text }} 
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %} 
+		<div class="megamenu-wrapper">
+			<div class="megamenu-pattern">
+				<div class="container">
+					<ul class="megamenu {% if (ustawienia['animation'] != '') %} {{ ustawienia['animation'] }} {% endif %}">
+						{% if (ustawienia['home_item'] == 'icon' or ustawienia['home_item'] == 'text') %} 
+						<li class="home"><a href="{{ home }}">{% if (ustawienia['home_item'] == 'icon') %}<i class="fa fa-home"></i>{% else %} {{ '<span><strong>'~home_text~'</strong></span>' }} {% endif %}</a></li>
+						{% endif %} 
+						{% if (ustawienia['search_bar'] == 1) %} 
+						<li class="search pull-right">
+							<!-- Search -->
+							<div class="search_form">
+								<div class="button-search2"></div>
+								<input type="text" class="input-block-level search-query" name="search2" placeholder="{{ text_search }}" id="search_query{{ id }}" value="{{ search }}" />
+								
+								{% if (theme_options.get( 'quick_search_autosuggest' ) != '0') %} 
+								<div id="autocomplete-results{{ id }}" class="autocomplete-results"></div>
+								
+								<script type="text/javascript">
+								$(document).ready(function() {
+									$('#search_query{{ id }}').autocomplete({
+										delay: 0,
+										appendTo: "#autocomplete-results{{ id }}",
+										source: function(request, response) {		
+											$.ajax({
+												url: 'index.php?route=search/autocomplete&filter_name=' +  encodeURIComponent(request.term),
+												dataType: 'json',
+												success: function(json) {
+													response($.map(json, function(item) {
+														return {
+															label: item.name,
+															value: item.product_id,
+															href: item.href,
+															thumb: item.thumb,
+															desc: item.desc,
+															price: item.price
+														}
+													}));
+												}
+											});
+										},
+										select: function(event, ui) {
+											document.location.href = ui.item.href;
+											
+											return false;
+										},
+										focus: function(event, ui) {
+									      	return false;
+									   	},
+									   	minLength: 2
+									})
+									.data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+									  return $( "<li>" )
+									    .append( "<a>" + item.label + "</a>" )
+									    .appendTo( ul );
+									};
+								});
+								</script>
+								{% endif %} 
+							</div>
+						</li>
+						{% endif %} 
+						{% for row in menu %} 
+								
+								{% set class = '' %}
+								{% set class_link = 'clearfix' %}
+								{% set title = constant('false') %}
+								{% set target = constant('false') %}
+								{% if (row['description'] != '') %} 
+									{% set class_link = class_links ~ ' description' %} 
+								{% endif %}
+								{% if (row['submenu'] is iterable and row['submenu'] is not empty) %} 
+									{% set class = class ~ ' with-sub-menu'%} 
+									{% if (row['submenu_type'] == 1) %} 
+										{% set class = class ~ ' click' %} 
+									{% else %} 
+										{% set class = class ~ ' hover' %} 
+									{% endif %} 
+								{% endif %}
+								{% if (row['display_on_mobile'] == 1) %}
+									{% set class = class ~ ' mobile-disabled' %} 
+								{% endif %}
+								{% if (row['position'] == 1) %} 
+									{% set class = class ~ ' pull-right' %} 
+								{% endif %}
+								{% if (row['submenu_type'] == 2) %} 
+									{% set title = 'title="hover-intent"' %} 
+								{% endif %}
+								{% if (row['new_window'] == 1) %} 
+									{% set target = 'target="_blank"' %} 
+								{% endif %}
+								{% if (row['custom_class'] != '') %} 
+									{% set class = class ~ '' ~ row['custom_class'] %} 
+								{% endif %}
+								{% set label = constant('false') %} 
+									
+								{% if (row['label'] != '') %} {% set label = '<span class="megamenu-label" style="background: ' ~ row['label_background_color'] ~ ';color: ' ~ row['label_text_color'] ~ ';"><span style="background: ' ~ row['label_background_color'] ~ ';border-color: ' ~ row['label_background_color'] ~ '"></span>' ~ row['label'] ~ '</span>' %}{% endif %}
+								{{ "<li class='"~class~"' "~title~"><p class='close-menu'></p><p class='open-menu'></p>" }} 
+								{{ "<a href='"~row['link']~"' class='"~class_link~"' "~target~"><span><strong>"~row['icon']~theme_options.html_entity_decode(row['name'][lang_id])~theme_options.html_entity_decode(row['description'])~label~"</strong></span></a>" }} 
+									{% if (row['submenu'] is iterable and row['submenu'] is not empty) %}
+										
+										{% if (ustawienia['orientation'] == '1' and row['submenu_width'] == '100%') %} {% set row = row|merge({'submenu_width': '350%'}) %} {% endif %}
+										{% set background_image = constant('false') %}
+										{% if (row['submenu_background'] != '') %}
+											{% set background_image = 'style="background-image:url(image/' ~ row['submenu_background'] ~ ');background-position: ' ~ row['submenu_background_position'] ~ ';background-repeat: ' ~ row['submenu_background_repeat'] ~ ';"' %}
+										{% endif %}
+										{% set full_width_class = constant('false') %}
+										{% if (row['submenu_width'] == '100%' or row['submenu_width'] == '300%' or row['submenu_width'] == '338%' or row['submenu_width'] == '1230px') %} {% set full_width_class = 'full-width-sub-menu' %}{% endif %}
+										{{ '<div class="sub-menu ' ~ full_width_class ~ '" style="width:'~row['submenu_width']~'">' }}
+											{{ '<div class="content" ' ~ background_image ~ '><p class="arrow"></p>' }}
+												{{ '<div class="row">' }}
+													{% set row_fluid = 0 %}
+													{% for submenu in row['submenu'] %} 
+														
+														{% if ((row_fluid+submenu['content_width']) > 12) %}
+															{% set row_fluid = submenu['content_width'] %}
+															{{ '</div><div class="border"></div><div class="row">' }}
+														{% else %} 
+															{% set row_fluid = row_fluid+submenu['content_width'] %}
+														{% endif %}
+														<div class="col-sm-{{ submenu['content_width'] }} {{ submenu['display_on_mobile'] == '1' ? 'mobile-disabled' : 'mobile-enabled' }}">
+															{% if (submenu['content_type'] == '0') %}
+																{{ submenu['html'] }}
+															{% elseif (submenu['content_type'] == '1') %}
+																{% if (submenu['product'] is iterable) %}
+																	{{ '<div class="product">' }}
+																		{{ '<div class="image"><a href="'~submenu['product']['link']~'"><img src="'~submenu['product']['image']~'" alt=""></a></div>' }}
+																		{{ '<div class="name"><a href="'~submenu['product']['link']~'">'~submenu['product']['name']~'</a></div>' }}
+																		{{ '<div class="price">' }}
+																			{% if (not submenu['product']['special']) %}
+																				{{ submenu['product']['price'] }}
+																			{% else %} 
+																				{{ submenu['product']['special'] }}
+																			{% endif %}
+																		{{ '</div>' }}
+																	{{ '</div>' }}
+																{% endif %}
+															{% elseif (submenu['content_type'] == '2') %}
+																{{ submenu['categories'] }}
+															{% elseif (submenu['content_type'] == '3') %}
+																{% if (submenu['products'] is iterable) %}
+																 {% set id = random(5000)*random(500000) %} 
+																 {{ '<div class="products-carousel-overflow clearfix">' }}
+																 {{ '<div class="next" id="productsCarousel' ~ id ~ '_next"><span></span></div>' }}
+																 {{ '<div class="prev" id="productsCarousel' ~ id ~ '_prev"><span></span></div>' }}
+																 {{ '<div class="box-heading">' ~ submenu['heading'][lang_id] ~ '</div>' }}
+																 {{ '<div class="strip-line"></div>' }}
+																 {{ '<div class="clear"></div>' }}
+	 															 {{ '<div class="products-carousel owl-carousel" id="productsCarousel' ~ id ~ '">' }}
+	 															 {% for product in submenu['products'] %} 
+	 																{{ '<div class="item"><div class="product">' }}
+	 																	{{ '<div class="image">' }}
+	 																	{% if (product['special'] and theme_options.get( 'display_text_sale' ) != '0') %}
+	 																		{% set text_sale = 'Sale' %}
+	 																		{% if (theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) != '') %}
+	 																			{% set text_sale = theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) %}
+	 																		{% endif %}
+	 																		
+	 																		{% if (theme_options.get( 'type_sale' ) == '1') %} 
+	 																			{% set product_detail = theme_options.getDataProduct( product['id'] ) %}
+	 																			{% set roznica_ceny = product_detail['price']-product_detail['special'] %}
+	 																			{% set procent = roznica_ceny*100/product_detail['price'] %} 
+	 																			{{ '<div class="sale">-' ~ procent|round ~ '%</div>' }}
+	 																		{% else %} 
+	 																			{{ '<div class="sale">' ~ text_sale ~ '</div>' }}
+	 																		{% endif %}
+	 																	{% endif %}
+	 																	{{ '<a href="'~product['link']~'"><img src="'~product['image']~'" alt=""></a></div>' }}
+	 																	{{ '<div class="name"><a href="'~product['link']~'">'~product['name']~'</a></div>' }}
+	 																	{{ '<div class="price">' }}
+	 																		{% if (not product['special']) %}
+	 																			{{ product['price'] }}
+	 																		{% else %} 
+	 																			{{ product['special'] }}
+	 																		{% endif %}
+	 																	{{ '</div>' }}
+	 																{{ '</div></div>' }}
+	 																{% endfor %}
+	 																{{ '</div>' }}
+																	{{ '</div>' }} 
+
+																	<script type="text/javascript">$(document).ready(function() {
+																	var owl{{ id }} = $("#productsCarousel{{ id }}");
+																		
+																	$("#productsCarousel{{ id }}_next").click(function(){
+																	    owl{{ id }}.trigger('owl.next');
+																	    return false;
+																	  });
+																	  
+																	$("#productsCarousel{{ id }}_prev").click(function(){
+																	    owl{{ id }}.trigger('owl.prev');
+																	    return false;
+																	});
+																	
+																	
+																	
+																	 {% set one = 1 %}
+																	 {% set two = 1 %}
+																	 {% set three = 1 %}
+																	 {% set four = 1 %}
+																	 
+																	 {% if (submenu['column'] == 2) %}
+																		 {% set two = 1 %}
+																		 {% set three = 2 %}
+																		 {% set four = 2 %}
+																	 {% endif %}
+																	 
+																	 {% if (submenu['column'] == 3) %}
+																		 {% set two = 1 %}
+																		 {% set three = 2 %}
+																		 {% set four = 3 %}
+																	 {% endif %}
+																	 
+																	 {% if (submenu['column'] == 4) %}
+																		 {% set one = 1 %}
+																		 {% set two = 2 %}
+																		 {% set three = 3 %}
+																		 {% set four = 4 %}
+																	 {% endif %}
+																	 
+																	 {% if (submenu['column'] == 5) %}
+																		 {% set one = 2 %}
+																		 {% set two = 3 %}
+																		 {% set three = 4 %}
+																		 {% set four = 5 %}
+																	 {% endif %}
+																	 
+																	 {% if (submenu['column'] == 6) %}
+																		 {% set one = 2 %}
+																		 {% set two = 3 %}
+																		 {% set three = 5 %}
+																		 {% set four = 6 %}
+																	 {% endif %}
+																	
+																	  
+																	owl{{ id }}.owlCarousel({
+																		 itemsCustom : [ 
+																		      [0, {{ one }}], 
+																		      [450, {{ two }}], 
+																		      [768, {{ three }}], 
+																		      [1200, {{ four }}] 
+																		 ],
+																		  {% if (page_direction[language_id] == 'RTL') %} 
+																		 direction: 'rtl'
+																		 {% endif %} 
+																	 });
+																	 });</script>
+																{% endif %}
+															{% endif %}											
+														{{ '</div>' }}
+													{% endfor %}
+												{{ '</div>' }}
+											{{ '</div>' }}
+										{{ '</div>' }}
+									{% endif %}
+								{{ "</li>" }}
+							{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	  $(window).load(function(){
+	      var css_tpl = '<style type="text/css">';
+	      css_tpl += '#megamenu_{{ id }} ul.megamenu > li > .sub-menu > .content {';
+	      css_tpl += '-webkit-transition: all {% if (ustawienia['animation_time'] > 0 and ustawienia['animation_time'] < 5000) %} {{ ustawienia['animation_time'] }} {% else %} {{ 300 }} {% endif %}ms ease-out !important;';
+	      css_tpl += '-moz-transition: all {% if (ustawienia['animation_time'] > 0 and ustawienia['animation_time'] < 5000) %} {{ ustawienia['animation_time'] }} {% else %} {{ 300 }} {% endif %}ms ease-out !important;';
+	      css_tpl += '-o-transition: all {% if (ustawienia['animation_time'] > 0 and ustawienia['animation_time'] < 5000) %} {{ ustawienia['animation_time'] }} {% else %} {{ 300 }} {% endif %}ms ease-out !important;';
+	      css_tpl += '-ms-transition: all {% if (ustawienia['animation_time'] > 0 and ustawienia['animation_time'] < 5000) %} {{ ustawienia['animation_time'] }} {% else %} {{ 300 }} {% endif %}ms ease-out !important;';
+	      css_tpl += 'transition: all {% if (ustawienia['animation_time'] > 0 and ustawienia['animation_time'] < 5000) %} {{ ustawienia['animation_time'] }} {% else %} {{ 300 }} {% endif %}ms ease-out !important;';
+	      css_tpl += '}</style>'
+	    $("head").append(css_tpl);
+	  });
+	</script>
+{% endif %}

@@ -1,0 +1,61 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+  {% set class = 2 %} 
+  {% set id = random(5000)*random(50000) %}
+  {% set all = 6 %} 
+  {% set row = 6 %} 
+
+  {% set theme_options = registry.get('theme_options') %}
+  {% set config = registry.get('config') %}
+  {% set page_direction = theme_options.get( 'page_direction' ) %} 
+  {% set language_id = config.get( 'config_language_id' ) %} 
+
+  <div class="box clearfix box-with-products with-scroll box-no-advanced">
+    <!-- Carousel nav -->
+    <a class="next" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_next"><span></span></a>
+    <a class="prev" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_prev"><span></span></a>
+    
+    <div class="box-heading">{{ module['content']['title'] }}</div>
+    <div class="strip-line"></div>
+    <div class="clear"></div>
+    <div class="box-content products">
+      <div class="box-product">
+        <div id="myCarousel{{ id }}" class="carousel slide">
+          <!-- Carousel items -->
+          <div class="carousel-inner">
+            {% set i = 0 %} {% set row_fluid = 0 %} {% set item = 0 %} {% for product in module['content']['products'] %} {% set row_fluid = row_fluid + 1 %} 
+              {% if (i == 0) %} {% set item = item + 1 %} {{ '<div class="active item"><div class="product-grid"><div class="row">' }} {% endif %} 
+              {% set r=row_fluid-(row_fluid/all)|round(0, 'floor')*all %} {% if (row_fluid>all and r == 1) %} {{ '</div></div></div><div class="item"><div class="product-grid"><div class="row">' }} {% set item = item + 1 %} {% else %} {% set r=row_fluid-(row_fluid/row)|round(0, 'floor')*row %} {% if (row_fluid>row and r == 1) %} {{ '</div><div class="row">' }} {% endif %} {% endif %} 
+              <div class="col-sm-{{ class }} col-xs-6 {% if (class == 2) %} {{ 'col-md-25 col-lg-2 col-sm-3 ' }} {% endif %} {% if (class == 2 and r == 0) %} {{ 'hidden-md hidden-sm' }} {% endif %} {% if (class == 2 and r == 5) %} {{ 'hidden-sm' }} {% endif %} {% if (class == 25) %} {{ 'col-md-25 col-lg-25 col-sm-3 ' }} {% endif %} {% if (class == 25 and r == 0) %} {{ 'hidden-sm' }} {% endif %}">
+                {% include 'fastor/template/new_elements/product.twig' %}
+              </div>
+            {% set i = i + 1 %} {% endfor %} 
+            {% if (i > 0) %} {{ '</div></div></div>' }} {% endif %} 
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+    var owl{{ id }} = $(".box #myCarousel{{ id }} .carousel-inner");
+    
+    $("#myCarousel{{ id }}_next").click(function(){
+        owl{{ id }}.trigger('owl.next');
+        return false;
+      })
+    $("#myCarousel{{ id }}_prev").click(function(){
+        owl{{ id }}.trigger('owl.prev');
+        return false;
+    });
+      
+    owl{{ id }}.owlCarousel({
+        slideSpeed : 500,
+        singleItem:true,
+        {% if (page_direction[language_id] == 'RTL') %} 
+        direction: 'rtl'
+        {% endif %} 
+     });
+  });
+  </script>
+{% endif %}

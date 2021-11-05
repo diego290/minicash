@@ -1,0 +1,59 @@
+
+{% if (erro == '') %}
+<script>
+function processar_pagamento_pix_loja5() {
+	//processa o pedido 
+	$('#button-confirm').attr("disabled","disabled");
+	$.ajax({
+		type: 'POST',
+		dataType: "JSON",
+		data: {pix: ''},
+		url: 'index.php?route=extension/payment/pixestaticoloja5/confirm',
+		cache: false,
+		success: function(resultado) {
+			console.log(resultado);
+			if(resultado.erro==true){
+				$('#button-confirm').removeAttr("disabled");
+				alert(resultado.log);
+			}else{
+				location.href = (resultado.link).replace(/&amp;/g, '&');
+			}
+			return false;
+		}
+	});
+	return false;
+}
+</script>
+
+<style>
+.tela_pagamento_pixestaticoloja5 {
+	width:50%;
+}
+@media screen and (max-width: 600px) {
+  .tela_pagamento_pixestaticoloja5 {
+	width:100%;
+  }
+}
+</style>
+
+<div class="panel panel-default tela_pagamento_pixestaticoloja5 pull-right">
+	<div class="panel-body">
+	<form id="paypic-form">
+	
+	<div class="alert alert-info" role="alert"><i class="fa fa-exclamation-circle"></i> Clique "Confirmar Pedido" para gerar o pedido e visualizar o QrCode PIX de pagamento.</div>
+
+	<div class="form-group">
+	<label class="control-label">&nbsp;</label>
+	<p class="form-control-static"><img class="img-responsive center-block" src="app/pixestaticoloja5/logo-pix.png"></p>
+	</div>
+
+	<span class="buttons">
+	<button type="button" class="button btn btn-success pull-right" onclick="processar_pagamento_pix_loja5()" id="button-confirm"><i class="fa fa-check"></i> Confirmar Pedido</button>
+	</span>
+
+	</form>
+	</div>
+</div>
+{% else %} 
+<div class="alert alert-danger" role="alert"><i class="fa fa-exclamation-circle"></i> {{ erro }}</div>
+{% endif %}

@@ -1,0 +1,75 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+{% set theme_options = registry.get('theme_options') %}
+{% set config = registry.get('config') %}
+{% set cart_info = theme_options.getCart() %} 
+
+<!-- Cart block -->
+<div id="cart_block" class="dropdown">
+	<div class="cart-heading dropdown-toogle" data-hover="dropdown" data-toggle="dropdown" onclick="window.location.href = '{{ cart }}'">
+		<i class="cart-count"><span id="total_count_ajax">{{ cart_info['total_item'] }}</span></i>
+		
+		{% if (theme_options.get( 'colors_status' ) == 1 and (theme_options.get( 'cart_icon' ) != '' or theme_options.get( 'cart_icon_hover' ) != '')) %} 
+		     <i class="cart-icon {% if (theme_options.get( 'cart_icon_hover' ) == '') %} {{ 'cart-icon-no-hover' }} {% endif %}">
+		     	<img src="image/{% if (theme_options.get( 'cart_icon_hover' ) != '') %}{{ theme_options.get( 'cart_icon_hover' ) }}{% else %}{{ theme_options.get( 'cart_icon' ) }}{% endif %}" class="cart-icon-hover" alt="">
+		     	<img src="image/{% if (theme_options.get( 'cart_icon' ) != '') %}{{ theme_options.get( 'cart_icon' ) }}{% else %}{{ 'catalog/view/theme/fastor/img/icon-cart.png' }}{% endif %}" class="cart-icon-standard" alt="">
+		     </i>
+		{% else %} 
+		     <i class="cart-icon"><img src="catalog/view/theme/fastor/img/icon-cart-hover.png" class="cart-icon-hover" alt=""><img src="catalog/view/theme/fastor/img/icon-cart.png" class="cart-icon-standard" alt=""></i>
+		{% endif %} 
+		
+		<p><strong id="total_price_ajax"><span id="total_price">{{ cart_info['total_price'] }}</span></strong></p>
+	</div>
+	
+	<div class="dropdown-menu" id="cart_content"><div id="cart_content_ajax">
+		{% if (products or vouchers) %} 
+		<div class="mini-cart-info">
+		  <table>
+		    {% for product in products %} 
+		    	
+		    <tr>
+		      <td class="image">{% if (product['thumb']) %} 
+		        <a href="{{ product['href'] }}"><img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" title="{{ product['name'] }}" /></a>
+		        {% endif %}</td>
+		      <td class="name"><a href="{{ product['href'] }}">{{ product['name'] }}</a>
+		        <div>
+		          {% for option in product['option'] %} 
+		          - <small>{{ option['name'] }} {{ option['value'] }}</small><br />
+		          {% endfor %} 
+		          {% if (product['recurring']) %} 
+		          - <small>{{ text_recurring }} {{ product['recurring'] }}</small><br />
+		          {% endif %} 
+		        </div></td>
+		      <td class="quantity">x&nbsp;{{ product['quantity'] }}</td>
+		      <td class="total">{{ product['total'] }}</td>
+		      <td class="remove"><a href="javascript:;" onclick="cart.remove('{{ product['cart_id'] }}');" title="{{ button_remove }}">x</a></td>
+		    </tr>
+		    {% endfor %} 
+		    {% for voucher in vouchers %} 
+		    <tr>
+		      <td class="image"></td>
+		      <td class="name">{{ voucher['description'] }}</td>
+		      <td class="quantity">x&nbsp;1</td>
+		      <td class="total">{{ voucher['amount'] }}</td>
+		      <td class="remove"><a href="javascript:;" onclick="voucher.remove('{{ voucher['key'] }}');" title="{{ button_remove }}">x</a></td>
+		    </tr>
+		    {% endfor %} 
+		  </table>
+		</div>
+		<div class="mini-cart-total">
+		  <table>
+		    {% for total in totals %} 
+		    <tr>
+		      <td class="right"><b>{{ total['title'] }}:</b></td>
+		      <td class="right">{{ total['text'] }}</td>
+		    </tr>
+		    {% endfor %} 
+		  </table>
+		</div>
+		
+		<div class="checkout"><a href="{{ cart }}" class="button btn-default">{{ text_cart }}</a> &nbsp;<a href="{{ checkout }}" class="button">{{ text_checkout }}</a></div>
+		{% else %} 
+		<div class="empty">{{ text_empty }}</div>
+		{% endif %}  
+	</div></div>
+</div>
+{% endif %}

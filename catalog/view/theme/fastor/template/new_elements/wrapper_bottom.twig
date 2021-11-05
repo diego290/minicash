@@ -1,0 +1,115 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %}
+
+	{% set columnleft = theme_options.getModules('column_left') %}
+	{% set grid_center = 12 %} 
+	{% if ( columnleft|length > 0 ) %} 
+		{% set grid_center = 9 %} 
+	{% endif %} 
+
+	{% set grid_content_right = 3 %}
+	{% set column_right = theme_options.getModules('column_right') %} 
+	{% if ( column_right|length > 0 ) %}
+		{% if (grid_center == 9) %}
+			{% set grid_content_right = 4 %}
+		{% else %} 
+			{% set grid_content_right = 3 %}
+		{% endif %}
+	{% endif %}
+
+							</div>
+							
+							{% if ( column_right|length > 0 ) %} 
+							<div class="col-md-{{ grid_content_right }}" id="column-right">
+								{% for module in column_right %} 
+									{{ module }}
+								{% endfor %} 
+							</div>
+							{% endif %} 
+						</div>
+						
+						{% if (products is defined and product_page is defined) %} {% if (products and theme_options.get( 'product_related_status' ) != '0') %} 
+							
+							{% set class = 3 %} 
+							{% set id = random(5000)*random(500000) %} 
+							{% set all = 4 %} 
+							{% set row = 4 %} 
+							
+							{% if (theme_options.get( 'product_per_pow' ) == 6) %} {% set class = 2 %} {% endif %}
+							{% if (theme_options.get( 'product_per_pow' ) == 5) %} {% set class = 25 %} {% endif %}
+							{% if (theme_options.get( 'product_per_pow' ) == 3) %} {% set class = 4 %} {% endif %}
+							
+							{% if (theme_options.get( 'product_per_pow' ) > 1) %} {% set row = theme_options.get( 'product_per_pow' ) %} {% set all = theme_options.get( 'product_per_pow' ) %} {% endif %} 
+							
+							<div class="box clearfix box-with-products box-no-advanced {% if (theme_options.get( 'product_scroll_related' ) != '0') %} {{ 'with-scroll' }} {% endif %}">
+							  {% if (theme_options.get( 'product_scroll_related' ) != '0') %} 
+							  <!-- Carousel nav -->
+							  <a class="next" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_next"><span></span></a>
+							  <a class="prev" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_prev"><span></span></a>
+							  {% endif %} 
+								
+							  <div class="box-heading">{{ text_related }}</div>
+							  <div class="strip-line"></div>
+							  <div class="clear"></div>
+							  <div class="box-content products related-products">
+							    <div class="box-product">
+							    	<div id="myCarousel{{ id }}" {% if (theme_options.get( 'product_scroll_related' ) != '0') %}class="carousel slide"{% endif %}>
+							    		<!-- Carousel items -->
+							    		<div class="carousel-inner">
+							    			{% set i = 0 %} {% set row_fluid = 0 %} {% set item = 0 %} {% for product in products %} {% set row_fluid = row_fluid + 1 %} 
+								    			{% if (i == 0) %} {% set item = item + 1 %} {{ '<div class="active item"><div class="product-grid"><div class="row">' }} {% endif %} 
+								    			{% set r=row_fluid-(row_fluid/all)|round(0, 'floor')*all %} {% if (row_fluid>all and r == 1) %} {% if (theme_options.get( 'product_scroll_related' ) != '0') %} {{ '</div></div></div><div class="item"><div class="product-grid"><div class="row">' }} {% set item = item + 1 %} {% else %} {{ '</div><div class="row">' }} {% endif %} {% else %} {% set r=row_fluid-(row_fluid/row)|round(0, 'floor')*row %} {% if (row_fluid>row and r == 1) %} {{ '</div><div class="row">' }} {% endif %} {% endif %} 
+								    			<div class="col-sm-{{ class }} col-xs-6">
+								    				{% include 'fastor/template/new_elements/product.twig' %}
+								    			</div>
+							    			{% set i = i + 1 %} {% endfor %} 
+							    			{% if (i > 0) %} {{ '</div></div></div>' }} {% endif %} 
+							    		</div>
+								  </div>
+							    </div>
+							  </div>
+							</div>
+							
+							{% if (theme_options.get( 'product_scroll_related' ) != '0') %} 
+							<script type="text/javascript">
+							$(document).ready(function() {
+							  var owl{{ id }} = $(".box #myCarousel{{ id }} .carousel-inner");
+								
+							  $("#myCarousel{{ id }}_next").click(function(){
+							      owl{{ id }}.trigger('owl.next');
+							      return false;
+							    })
+							  $("#myCarousel{{ id }}_prev").click(function(){
+							      owl{{ id }}.trigger('owl.prev');
+							      return false;
+							  });
+							    
+							  owl{{ id }}.owlCarousel({
+							  	  slideSpeed : 500,
+							      singleItem:true
+							   });
+							});
+							</script>
+							{% endif %} 
+						{% endif %}{% endif %} 
+					</div>
+				</div>
+				
+				<div class="row">	
+					<div class="col-sm-12">	
+						
+						{% set contentbottom = theme_options.getModules('content_bottom') %}
+						{% if ( contentbottom|length > 0 ) %} 
+														{% for module in contentbottom %} 
+								{{ module }}
+							{% endfor %}
+							
+						{% endif %} 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>				  
+</div>
+{% endif %}

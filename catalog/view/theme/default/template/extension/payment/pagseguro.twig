@@ -1,0 +1,53 @@
+<div class="buttons">
+  <div class="pull-right">
+    <input type="button" value="{{ button_confirm }}" id="button-confirm" data-loading-text="{{ text_loading }}" class="btn btn-primary" />
+  </div>
+</div>
+{% if payment_pagseguro_ambiente == 'sandbox' %}
+<script type="text/javascript" src="https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.lightbox.js"></script>
+{% else %}
+<script type="text/javascript" src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.lightbox.js"></script>
+{% endif %}
+
+<script type="text/javascript"><!--
+$('#button-confirm').on('click', function() {
+	$.ajax({ 
+		type: 'get',
+		url: 'index.php?route=extension/payment/pagseguro/confirm',
+		cache: false,
+		beforeSend: function() {
+			$('#button-confirm').button('loading');
+		},
+		complete: function() {
+			$('#button-confirm').button('reset');
+		},		
+		success: function() {
+			{% if url %}
+			
+				// lightbox
+				var isOpenLightbox = PagSeguroLightbox({
+					code: '{{ api_code }}'
+				},
+				{
+					success : function(transactionCode) {
+						location = '{{ success_redirect }}'
+					},
+					abort : function() {
+						location = '{{ cancel_redirect }}'
+					}					
+				});
+				// Redirecionando o cliente caso o navegador não tenha suporte ao Lightbox
+				if (!isOpenLightbox){
+					location = '{{ url }}';
+				}			
+				// fim
+			{% else %}
+				alert('Erro de acesso no PagSeguro. Para mais detalhes, verifique o log de erros do OpenCart.');
+			{% endif %}
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+		}
+	});
+});
+//--></script> 

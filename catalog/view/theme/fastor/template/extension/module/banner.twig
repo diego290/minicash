@@ -1,0 +1,31 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %}
+	{% set page_direction = theme_options.get( 'page_direction' ) %} 
+	{% set language_id = config.get( 'config_language_id' ) %}
+
+	<div id="banner{{ module }}" class="owl-carousel banner-module">
+	  {% for banner in banners %} 
+	  <div class="item">
+	    {% if (banner['link']) %} 
+	    	<a href="{{ banner['link'] }}"><img src="{{ banner['image'] }}" alt="{{ banner['title'] }}" class="img-responsive" /></a>
+	    {% else %} 
+	    	<img src="{{ banner['image'] }}" alt="{{ banner['title'] }}" class="img-responsive" />
+	    {% endif %} 
+	  </div>
+	  {% endfor %} 
+	</div>
+	
+	<script type="text/javascript"><!--
+	$('#banner{{ module }}').owlCarousel({
+		items: 6,
+		autoPlay: 3000,
+		singleItem: true,
+		navigation: false,
+		transitionStyle: 'fade',
+		{% if (page_direction[language_id] == 'RTL') %} 
+		direction: 'rtl'
+		{% endif %} 
+	});
+	--></script>
+{% endif %}

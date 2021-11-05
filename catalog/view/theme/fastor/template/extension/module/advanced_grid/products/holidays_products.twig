@@ -1,0 +1,41 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+     {% set theme_options = registry.get('theme_options') %}
+     {% set config = registry.get('config') %} 
+     <div class="holidays-products">
+          <div class="heading">{{ theme_options.html_entity_decode(module['content']['title']) }}</div>
+          {% for product in module['content']['products'] %} 
+          {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %} 
+          <div class="product clearfix">
+               <div class="left">
+                    {% if (product['thumb']) %} 
+                         <div class="image">
+                              <a href="{{ product['href'] }}">
+                                   {% if (theme_options.get( 'lazy_loading_images' ) != '0') %} 
+                                   <img src="image/catalog/blank.gif" data-echo="{{ product['thumb'] }}" alt="{{ product['name'] }}" />
+                                   {% else %} 
+                                   <img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" />
+                                   {% endif %} 
+                              </a>
+                         </div>
+                    {% else %} 
+                         <div class="image">
+                              <a href="{{ product['href'] }}"><img src="image/no_image.jpg" alt="{{ product['name'] }}" /></a>
+                         </div>
+                    {% endif %} 
+               </div>
+               
+               <div class="right">
+                    <div class="name"><a href="{{ product['href'] }}">{{ product['name'] }}</a></div>
+                    <div class="brand">{{ product_detail['manufacturer'] }}</div>
+                    <div class="price">
+                         {% if (not product['special']) %} 
+                         {{ product['price'] }} 
+                         {% else %} 
+                         <span class="price-old">{{ product['price'] }}</span> <span class="price-new">{{ product['special'] }}</span>
+                         {% endif %} 
+                    </div>
+               </div>
+          </div>
+          {% endfor %} 
+     </div>
+{% endif %}

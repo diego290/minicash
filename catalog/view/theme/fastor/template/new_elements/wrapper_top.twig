@@ -1,0 +1,198 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %}
+
+	<!-- BREADCRUMB
+		================================================== -->
+	<div class="breadcrumb {% if (theme_options.get( 'breadcrumb_layout' ) == 1) %} {{ 'full-width' }} {% elseif (theme_options.get( 'breadcrumb_layout' ) == 4) %} {{ 'fixed3 fixed2' }} {% elseif (theme_options.get( 'breadcrumb_layout' ) == 3) %} {{ 'fixed2' }} {% else %} {{ 'fixed' }} {% endif %}">
+		<div class="background-breadcrumb"></div>
+		<div class="background" {% set breadcrumb = theme_options.getModules('breadcrumb') %} {% if ( breadcrumb|length > 0 ) %} {% for module in breadcrumb %} {{ module }} {% endfor %} {% endif %}>
+			<div class="shadow"></div>
+			<div class="pattern">
+				<div class="container">
+					<div class="clearfix">
+					     {% if (product_page is defined and theme_options.get( 'product_breadcrumb' ) != '2') %} 
+					     {% set product_prev_next = theme_options.getNextPrevProduct( product_id ) %} 
+					          <div class="row">
+					               <div class="col-md-3 hidden-xs hidden-sm">
+					                    {% if (product_prev_next['prev'] is iterable) %} 
+					                         {% if (theme_options.get( 'product_breadcrumb' ) == '1') %} 
+	     				                    <div class="next-product-2 clearfix">
+	     				                         <a href="{{ product_prev_next['prev']['href'] }}" data-toggle="tooltip" data-placement="top" title="{{ product_prev_next['prev']['name'] }}" class="button-previous-next">{% if (theme_options.get( 'previous_product_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'previous_product_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'Previous product' }} {% endif %}</a>
+	     				                    </div>
+	     				                    {% else %} 
+	     				                    <div class="next-product clearfix">
+	     				                         <div class="image"><a href="{{ product_prev_next['prev']['href'] }}"><img src="{{ product_prev_next['prev']['thumb'] }}" alt="{{ product_prev_next['prev']['name'] }}"></a></div>
+	     				                         <div class="right">
+	     				                              <div class="name"><a href="{{ product_prev_next['prev']['href'] }}">{{ product_prev_next['prev']['name'] }}</a></div>
+	     				                              <div class="price">{% if (product_prev_next['prev']['special']) %} {{ product_prev_next['prev']['special'] }} {% else %} {{ product_prev_next['prev']['price'] }} {% endif %}</div>
+	     				                         </div>
+	     				                    </div>
+	     				                    {% endif %} 
+					                    {% endif %} 
+					               </div>
+					               
+					               <div class="col-md-6">
+					               		{% for breadcrumb in breadcrumbs %} 
+					               			{% set heading_title = breadcrumb['text'] %} 
+					               		{% endfor %} 
+					               		
+					                    <h1 id="title-page">{{ heading_title }} 
+					                    	{% if (weight is defined) %} {% if (weight) %} 
+					                    	&nbsp;({{ weight }})
+					                    	{% endif %} {% endif %} 
+					                    </h1>
+					                    
+					                    <ul>
+					                    	{% for breadcrumb in breadcrumbs %} 
+					                    	<li><a href="{{ breadcrumb['href'] }}">{% if (breadcrumb['text'] != '<i class="fa fa-home"></i>') %} {{ breadcrumb['text'] }} {% else %} {% if (theme_options.get( 'home_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'home_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'Home' }} {% endif %} {% endif %}</a></li>
+					                    	{% endfor %} 
+					                    </ul>
+					               </div>
+					               
+	     					     <div class="col-md-3 hidden-xs hidden-sm">
+	     					          {% if (product_prev_next['next'] is iterable) %} 
+	          					          {% if (theme_options.get( 'product_breadcrumb' ) == '1') %} 
+	          					          <div class="next-product-2 right clearfix">
+	          					               <a href="{{ product_prev_next['next']['href'] }}" data-toggle="tooltip" data-placement="top" title="{{ product_prev_next['next']['name'] }}" class="button-previous-next">{% if (theme_options.get( 'next_product_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'next_product_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'Next product' }} {% endif %}</a>
+	          					          </div>
+	          					          {% else %} 
+	          					          <div class="next-product right clearfix">
+	          					               <div class="image"><a href="{{ product_prev_next['next']['href'] }}"><img src="{{ product_prev_next['next']['thumb'] }}" alt="{{ product_prev_next['next']['name'] }}"></a></div>
+	          					               <div class="right">
+	          					                    <div class="name"><a href="{{ product_prev_next['next']['href'] }}">{{ product_prev_next['next']['name'] }}</a></div>
+	          					                    <div class="price">{% if (product_prev_next['next']['special']) %} {{ product_prev_next['next']['special'] }} {% else %} {{ product_prev_next['next']['price'] }} {% endif %}</div>
+	          					               </div>
+	          					          </div>
+	          					          {% endif %} 
+	     					          {% endif %} 
+	     					     </div>
+	     					</div>
+						{% else %} 
+							 {% for breadcrumb in breadcrumbs %} 
+							 	{% set heading_title = breadcrumb['text'] %} 
+							 {% endfor %} 
+							 
+						     <h1 id="title-page">{{ heading_title }} 
+						     	{% if (weight is defined) %} {% if (weight) %} 
+						     	&nbsp;({{ weight }})
+						     	{% endif %} {% endif %} 
+						     </h1>
+						     
+						     <ul>
+						     	{% for breadcrumb in breadcrumbs %} 
+						     	<li><a href="{{ breadcrumb['href'] }}">{% if (breadcrumb['text'] != '<i class="fa fa-home"></i>') %} {{ breadcrumb['text'] }} {% else %} {% if (theme_options.get( 'home_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'home_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'Home' }} {% endif %} {% endif %}</a></li>
+						     	{% endfor %} 
+						     </ul> 
+						{% endif %} 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- MAIN CONTENT
+		================================================== -->
+	<div class="main-content {% if (theme_options.get( 'content_layout' ) == 1) %} {{ 'full-width' }} {% elseif (theme_options.get( 'content_layout' ) == 4) %} {{ 'fixed3 fixed2' }} {% elseif (theme_options.get( 'content_layout' ) == 3) %} {{ 'fixed2' }} {% else %} {{ 'fixed' }} {% endif %} inner-page">
+		<div class="background-content"></div>
+		<div class="background">
+			<div class="shadow"></div>
+			<div class="pattern">
+				<div class="container">
+					
+					{% set preface_left = theme_options.getModules('preface_left') %}
+					{% set preface_right = theme_options.getModules('preface_right') %}
+					
+					{% if ( preface_left|length > 0 or preface_right|length > 0 ) %} 
+					<div class="row">
+						<div class="col-sm-9">
+													{% if ( preface_left|length > 0 ) %}
+								{% for module in preface_left %} 
+									{{ module }}
+								{% endfor %}
+							{% endif %} 
+						</div>
+						
+						<div class="col-sm-3">
+													{% if ( preface_right|length > 0 ) %}
+								{% for module in preface_right %} 
+									{{ module }}
+								{% endfor %}
+							{% endif %} 
+						</div>
+					</div>
+					{% endif %} 
+					
+					
+					{% set preface_fullwidth = theme_options.getModules('preface_fullwidth') %}
+					{% if ( preface_fullwidth|length > 0 ) %}
+						{{ '<div class="row"><div class="col-sm-12">' }}
+						{% for module in preface_fullwidth %} 
+							{{ module }}
+						{% endfor %}
+						{{ '</div></div>' }}
+					{% endif %} 
+					
+					<div class="row">
+						{% set columnleft = theme_options.getModules('column_left') %}
+						{% if ( columnleft|length > 0 ) %} 
+						<div class="col-md-3" id="column-left">
+							{% for module in columnleft %} 
+								{{ module }}
+							{% endfor %}
+						</div>
+						{% endif %} 
+						
+						{% set grid_center = 12 %} {% if ( columnleft|length > 0 ) %} {% set grid_center = 9 %} {% endif %} 
+						<div class="col-md-{{ grid_center }}">
+							
+							{% set content_big_column = theme_options.getModules('content_big_column') %}
+							{% if ( content_big_column|length > 0 ) %} 
+								{% for module in content_big_column %} 
+									{{ module }}
+								{% endfor %}
+							{% endif %} 
+							
+							
+							{% set content_top = theme_options.getModules('content_top') %}
+							{% if ( content_top|length > 0 ) %} 
+								{% for module in content_top %} 
+									{{ module }}
+								{% endfor %}
+							{% endif %} 
+							
+							<div class="row">
+								
+								{% set grid_content_top = 12 %} 
+								{% set grid_content_right = 3 %}
+								{% set column_right = theme_options.getModules('column_right') %} 
+								{% if ( column_right|length > 0 ) %}
+									{% if (grid_center == 9) %}
+										{% set grid_content_top = 8 %}
+										{% set grid_content_right = 4 %}
+									{% else %} 
+										{% set grid_content_top = 9 %}
+										{% set grid_content_right = 3 %}
+									{% endif %}
+								{% endif %}
+								
+								<div class="col-md-{{ grid_content_top }} center-column {% if (background_status is defined) %} {{ 'content-without-background' }} {% else %} {{ 'content-with-background' }} {% endif %}" id="content">
+
+									{% if (error_warning is defined and checkoutPage is not defined) %} 
+										{% if (error_warning) %} 
+										<div class="warning">
+											<button type="button" class="close" data-dismiss="alert">&times;</button>
+											{{ error_warning }} 
+										</div>
+										{% endif %} 
+									{% endif %} 
+									
+									{% if (success is defined) %} 
+										{% if (success) %} 
+										<div class="success">
+											<button type="button" class="close" data-dismiss="alert">&times;</button>
+											{{ success }} 
+										</div>
+										{% endif %} 
+									{% endif %}
+{% endif %}

@@ -1,0 +1,15 @@
+.megamenu-background > div { box-shadow: inset 0px 1px 0px 0px #354864;-webkit-box-shadow: inset 0px 1px 0px 0px #354864; -moz-box-shadow: inset 0px 1px 0px 0px #354864;  }
+#main .breadcrumb .background { border: none; }
+.megamenu-type-34 ul.megamenu > li.pull-right > a { border-color:  #354864; }
+.megamenu-type-34 #main .megamenu-background .vertical .megamenu-wrapper { background: #fff !important; }
+.megamenu-type-34 .megamenu-background .vertical .megamenuToogle-wrapper .container { border-bottom: none; }
+.megamenu-type-34 .vertical ul.megamenu > li:last-child { margin-bottom: 5px !important; }
+.megamenu-type-34 .megamenu-background .vertical ul.megamenu > li { border-top: 1px solid #e5e5e5 !important; }
+.megamenu-type-34 .megamenu-background .vertical ul.megamenu > li:first-child { border: none !important; }
+.megamenu-type-34 .vertical ul.megamenu > li:first-child {margin-top: 5px !important; }
+.megamenu-type-34 #main .megamenu-background .vertical ul.megamenu > li > a { padding-top: 7px;padding-bottom: 6px; }
+.megamenu-type-34 .megamenu-background .vertical .megamenuToogle-wrapper .container:before, .megamenu-type-34 .megamenu-background .vertical .megamenuToogle-wrapper .container:after, .megamenu-type-34 .megamenu-background .vertical .megamenuToogle-wrapper:before { display: none; }
+.box-type-19 .clear, .tab-content:before, .tab-content:after { display: block !important; }
+.box-type-19 .col-sm-3 .box-no-advanced .box-content, .box-type-19 .col-sm-4 .box-no-advanced .box-content, .box-type-19 .col-md-3 .box-no-advanced .box-content, .box-type-19 .col-md-4 .box-no-advanced .box-content { border: 2px solid #ffb600 !important; }
+.box-type-19 .today-deals-toys2-products .is-countdown { margin-top: -40px; }
+#main .is-countdown { background: #ffb600; }

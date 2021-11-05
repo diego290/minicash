@@ -1,0 +1,39 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+  {% set class = 3 %} 
+  {% set all = 4 %}
+  {% set id = random(50000)*random(50000) %}
+
+  {% set theme_options = registry.get('theme_options') %}
+  {% set config = registry.get('config') %}
+
+  {% if (module['content']['products']|length == 6) %} {% set class = 2 %} {% set all = 6 %} {% endif %}
+  {% if (module['content']['products']|length == 5) %} {% set class = 25 %} {% set all = 5 %} {% endif %}
+  {% if (module['content']['products']|length == 3) %} {% set class = 4 %} {% set all = 3 %} {% endif %}
+  {% if (module['content']['products']|length == 2) %} {% set class = 6 %} {% set all = 2 %} {% endif %}
+  {% if (module['content']['products']|length == 1) %} {% set class = 12 %} {% set all = 1 %} {% endif %} 
+
+  <div class="box clearfix box-with-products {% if (module['content']['title'] == '') %} {{ 'without-heading' }} {% endif %}">
+    {% if (module['content']['title'] != '') %} 
+    <div class="box-heading">{{ module['content']['title'] }}</div>
+    <div class="strip-line"></div>
+    {% endif %} 
+    <div class="clear"></div>
+    <div class="box-content products">
+      <div class="box-product">
+        <div id="myCarousel{{ id }}">
+          <!-- Carousel items -->
+          <div class="carousel-inner">
+            {% set i = 0 %} {% set row_fluid = 0 %} {% set item = 0 %} {% for product in module['content']['products'] %} {% set row_fluid = row_fluid + 1 %} 
+              {% if (i == 0) %} {% set item = item + 1 %} {{ '<div class="active item"><div class="product-grid"><div class="row">' }} {% endif %} 
+              {% set r=row_fluid-(row_fluid/all)|round(0, 'floor')*all %} {% if (row_fluid>all and r == 1) %} {{ '</div><div class="row">' }} {% endif %} 
+              <div class="col-sm-{{ class }} {% if (class != 12) %}col-xs-6{% endif %} {% if (class == 2) %} {{ 'col-md-25 col-lg-2 col-sm-3 ' }} {% endif %} {% if (class == 2 and r == 0) %} {{ 'hidden-md hidden-sm' }} {% endif %} {% if (class == 2 and r == 5) %} {{ 'hidden-sm' }} {% endif %} {% if (class == 25) %} {{ 'col-md-25 col-lg-25 col-sm-3 ' }} {% endif %} {% if (class == 25 and r == 0) %} {{ 'hidden-sm' }} {% endif %}">
+                {% include 'fastor/template/new_elements/product.twig' %}
+              </div>
+            {% set i = i + 1 %} {% endfor %} 
+            {% if (i > 0) %} {{ '</div></div></div>' }} {% endif %} 
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

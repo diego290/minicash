@@ -1,0 +1,19 @@
+.footer-type-13 #main .footer .container > .row:last-child:before, 
+.footer-type-13 #main .footer .advanced-grid .container > div > .row:last-child:before {
+ left: 15px !important;
+ right: 15px !important;
+}
+
+@media (max-width: 767px) {
+ .responsive .footer-type-13 #main .footer .container > .row:last-child:before, 
+ .responsive .footer-type-13 #main .footer .advanced-grid .container > div > .row:last-child:before {
+   left: 10px !important;
+   right: 10px !important;
+  }
+}
+
+.footer-type-13 #main .footer ul li a { line-height: 30px; }
+
+.footer-type-13 #main .footer ul { padding-bottom: 13px; }
+
+#main .header-type-7 #top .search_form { max-width: 220px; }

@@ -1,0 +1,32 @@
+<div class="box box-no-advanced box-with-products standard-category-wall">
+	<div class="box-heading">{{ block_heading }}</div>
+	<div class="clear"></div>
+	<div class="box-content products">
+		 {% set class = 3 %} 
+		{% if (category_number == 6) %} {% set class = 2 %}{% endif %}
+		{% if (category_number == 5) %} {% set class = 25 %}{% endif %}
+		{% if (category_number == 3) %} {% set class = 4 %}{% endif %}
+		{% if (category_number == 2) %} {% set class = 6 %}{% endif %} 
+		
+		{% set i = 0 %}
+		{{ '<div class="category-wall"><div class="row">' }}
+			{% for category in categories %} 
+				{% if (i%category_number == 0 and i != 0) %} {{ '</div><div class="row">' }}{% endif %}
+				{{ '<div class="col-sm-' ~ class ~ ' col-xs-6">' }}
+					{% if (category['image']) %} {{ '<a href="' ~ category['href'] ~ '"><img src="' ~ category['image'] ~'" alt="' ~ category['name'] ~ '"></a>' }}{% endif %}
+					{{ '<div class="name"><a href="' ~ category['href'] ~ '">' ~ category['name'] ~ '</a></div>' }}
+					
+					{% if (category['children']|length > 0) %}
+						{{ '<ul>' }}
+						{% for child in category['children'] %} 
+							{{ '<li><a href="' ~ child['href'] ~ '">' ~ child['name'] ~ '</a></li>' }}
+						{% endfor %}
+						{{ '</ul>' }}
+						{{ '<a href="' ~ category['href'] ~ '" class="more-link">' ~ more_text ~ '</a>' }}
+					{% endif %}
+				{{ '</div>' }}
+				{% set i = i + 1 %}
+			{% endfor %}
+		{{ '</div></div>' }} 
+	</div>
+</div>

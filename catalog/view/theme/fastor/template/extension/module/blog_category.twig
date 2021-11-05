@@ -1,0 +1,41 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+    {% set theme_options = registry.get('theme_options') %}
+    <div class="box box-with-categories box-no-advanced category-box-type-2 blog-module {% if (theme_options.get( 'category_box_style' ) == '2') %} {{ 'category-box-type-3' }} {% endif %}">
+        <div class="box-heading">{{ heading_title }}</div>
+        <div class="strip-line"></div>
+        <div class="box-content box-category">
+            <ul class="accordion" id="accordion-category">
+                 {% set i = 0 %}
+                 {% for category in categories %} 
+                    {% set i = i + 1 %}
+                    <li class="panel">
+                        {% if (category['category_id'] == category_id) %} 
+                            <a href="{{ category['href'] }}" class="active">{{ category['name'] }}</a>
+                        {% else %} 
+                            <a href="{{ category['href'] }}">{{ category['name'] }}</a>
+                        {% endif %} 
+                        {% set categories_2 = category['children'] %} 
+                        {% if (categories_2) %} 
+                            <span class="head"><a style="float:right;padding-right:5px" class="accordion-toggle {% if (category['category_id'] != category_id) %}collapsed{% endif %}" data-toggle="collapse" data-parent="#accordion-category" href="#category{{ i }}"><span class="plus">+</span><span class="minus">-</span></a></span>
+                            {% if (categories_2|length > 0) %} 
+                                <div id="category{{ i }}" class="panel-collapse collapse {{ category['category_id'] == category_id ? 'in' : '' }}" style="clear:both">
+                                    <ul>
+                                    {% for child in categories_2 %} 
+                                        <li>
+                                            {% if (child['category_id'] == child_id) %} 
+                                                <a href="{{ child['href'] }}" class="active">{{ child['name'] }}</a>
+                                            {% else %} 
+                                                <a href="{{ child['href'] }}">{{ child['name'] }}</a>
+                                            {% endif %} 
+                                        </li>
+                                    {% endfor %} 
+                                    </ul>
+                                </div>
+                            {% endif %} 
+                        {% endif %}
+                    </li>
+                {% endfor %} 
+            </ul>
+        </div>
+    </div>
+{% endif %}

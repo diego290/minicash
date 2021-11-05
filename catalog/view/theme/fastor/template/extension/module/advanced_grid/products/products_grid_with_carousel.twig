@@ -1,0 +1,47 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+  {% set class = 3 %} 
+  {% set all = 4 %}
+  {% set id = random(50000)*random(50000) %}
+
+  {% set theme_options = registry.get('theme_options') %}
+  {% set config = registry.get('config') %}
+  {% set page_direction = theme_options.get( 'page_direction' ) %} 
+  {% set language_id = config.get( 'config_language_id' ) %}
+
+  {% if (module['content']['products']|length == 6) %} {% set class = 2 %} {% set all = 6 %} {% endif %}
+  {% if (module['content']['products']|length == 5) %} {% set class = 25 %} {% set all = 5 %} {% endif %}
+  {% if (module['content']['products']|length == 3) %} {% set class = 4 %} {% set all = 3 %} {% endif %}
+  {% if (module['content']['products']|length == 2) %} {% set class = 6 %} {% set all = 2 %} {% endif %}
+  {% if (module['content']['products']|length == 1) %} {% set class = 12 %} {% set all = 1 %} {% endif %} 
+
+  <div class="box clearfix box-with-products products-grid-with-carousel {% if (module['content']['title'] == '') %} {{ 'without-heading-type-2' }} {% endif %}">
+    {% if (module['content']['title'] != '') %} 
+    <div class="box-heading">{{ module['content']['title'] }}</div>
+    <div class="strip-line"></div>
+    {% endif %} 
+    <div class="clear"></div>
+    <div class="box-content products">
+      <div class="box-product">
+        <div id="myCarousel{{ id }}">
+             <div class="owl-carousel">
+              {% for product in module['content']['products'] %} 
+                <div class="item">
+                  <div class="product-grid">{% include 'fastor/template/new_elements/product.twig' %}</div>
+                </div>
+              {% endfor %} 
+          </div>
+       </div>
+     </div>
+    </div>
+  </div> 
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+   $("#myCarousel{{ id }} .owl-carousel").owlCarousel({
+       {% if (page_direction[language_id] == 'RTL') %} 
+       direction: 'rtl'
+       {% endif %} 
+    });
+  });
+  </script>
+{% endif %}

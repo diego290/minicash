@@ -1,0 +1,3 @@
+ body.common-home { background-image: none !important; }
+.tp-bullets.simplebullets.round .bullet { background: #e9e9e9 !important;opacity: 1 !important;width: 15px !important;height: 15px !important;border-radius: 100px !important;-webkit-border-radius: 100px !important;moz-border-radius: 100px !important; }
+.tp-bullets.simplebullets.round .bullet.selected { background: #262626 !important; }

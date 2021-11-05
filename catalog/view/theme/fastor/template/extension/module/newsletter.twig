@@ -1,0 +1,82 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %} 
+
+	<div class="box box-no-advanced" id="newsletter{{ module_id }}">
+		{% if (module_title != '') %} 
+		<div class="box-heading">{{ module_title }}</div>
+		<div class="strip-line"></div>
+		{% endif %} 
+		<div class="box-content">
+			{% if (module_text != '') %} {{ module_text }}{% endif %} 
+			<input type="text" class="email" placeholder="{{ input_placeholder }}" style="width: 100%;display: block;margin: 10px 0px 0px 0px" />
+			<a class="button subscribe" style="margin: 10px 7px 0px 0px">{{ subscribe_text }}</a>
+			{% if (button_unsubscribe == 1) %} 
+				<a class="button unsubscribe" style="margin: 10px 7px 0px 0px">{{ unsubscribe_text }}</a>
+			{% endif %} 
+		</div>
+	</div>
+
+	{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+		<div class="newsletter_rodo2">
+			<form id="agree_rodo_form2">
+				<input type="checkbox" name="agree_rodo2" value="1" required="required">&nbsp;{{ theme_options.html_entity_decode(theme_options.get( 'rodo_text', config.get( 'config_language_id' ) )) }} 
+				<input type="submit" class="submit hidden" value="Submit">
+			</form>
+		</div>
+	{% endif %} 
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+		function Unsubscribe() {
+			$.post('{{ unsubscribe_url }}', 
+				{ 
+					email: $('#newsletter{{ module_id }} .email').val() 
+				}, function (e) {
+					$('#newsletter{{ module_id }} .email').val('');
+					alert(e.message);
+				}
+			, 'json');
+		}
+		
+		function Subscribe() {
+			{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+			if($('input[name="agree_rodo2"]').is(':checked')) {
+			{% endif %} 
+			$.post('{{ subscribe_url }}', 
+				{ 
+					email: $('#newsletter{{ module_id }} .email').val() 
+				}, function (e) {
+					if(e.error === 1) {
+						var r = confirm(e.message);
+						if (r == true) {
+						    $.post('{{ unsubscribe_url }}', { 
+						    	email: $('#newsletter{{ module_id }} .email').val() 
+						    }, function (e) {
+						    	$('#newsletter{{ module_id }} .email').val('');
+						    	alert(e.message);
+						    }, 'json');
+						}
+					} else {
+						$('#newsletter{{ module_id }} .email').val('');
+						alert(e.message);
+					}
+				}
+			, 'json');
+			{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+			} else {
+				$('#agree_rodo_form2 .submit').click();
+			}
+			{% endif %} 
+		}
+		
+		$('#newsletter{{ module_id }} .subscribe').click(Subscribe);
+		$('#newsletter{{ module_id }} .unsubscribe').click(Unsubscribe);
+		$('#newsletter{{ module_id }} .email').keypress(function (e) {
+		    if (e.which == 13) {
+		        Subscribe();
+		    }
+		});
+	});
+	</script>
+{% endif %}

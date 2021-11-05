@@ -1,0 +1,80 @@
+{% set theme_options = registry.get('theme_options') %}
+{% set config = registry.get('config') %} 
+
+<div class="ceramica-newsletter clearfix" id="newsletter{{ id }}">
+     <div class="heading">
+          <p>{{ module['content']['title'] }}</p>
+     </div>
+     
+     <div class="content">
+          <p>{{ module['content']['text'] }}</p>
+     </div>
+     
+     <div class="inputs">
+          <input type="text" class="email" placeholder="{{ module['content']['input_placeholder'] }}" />
+          <a class="button subscribe">{{ module['content']['subscribe_text'] }}</a>
+     </div>
+     
+	{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+		<div class="newsletter_rodo2">
+			<form id="agree_rodo_form2">
+				<input type="checkbox" name="agree_rodo2" value="1" required="required">&nbsp;{{ theme_options.html_entity_decode(theme_options.get( 'rodo_text', config.get( 'config_language_id' ) )) }} 
+				<input type="submit" class="submit hidden" value="Submit">
+			</form>
+		</div>
+	{% endif %} 
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	function Unsubscribe() {
+		$.post('{{ module['content']['unsubscribe_url'] }}', 
+			{ 
+				email: $('#newsletter{{ id }} .email').val() 
+			}, function (e) {
+				$('#newsletter{{ id }} .email').val('');
+				alert(e.message);
+			}
+		, 'json');
+	}
+	
+	function Subscribe() {
+		{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+		if($('input[name="agree_rodo2"]').is(':checked')) {
+		{% endif %} 
+		$.post('{{ module['content']['subscribe_url'] }}', 
+			{ 
+				email: $('#newsletter{{ id }} .email').val() 
+			}, function (e) {
+				if(e.error === 1) {
+					var r = confirm(e.message);
+					if (r == true) {
+					    $.post('{{ module['content']['unsubscribe_url'] }}', { 
+					    	email: $('#newsletter{{ id }} .email').val() 
+					    }, function (e) {
+					    	$('#newsletter{{ id }} .email').val('');
+					    	alert(e.message);
+					    }, 'json');
+					}
+				} else {
+					$('#newsletter{{ id }} .email').val('');
+					alert(e.message);
+				}
+			}
+		, 'json');
+		{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+		} else {
+			$('#agree_rodo_form2 .submit').click();
+		}
+		{% endif %} 
+	}
+	
+	$('#newsletter{{ id }} .subscribe').click(Subscribe);
+	$('#newsletter{{ id }} .unsubscribe').click(Unsubscribe);
+	$('#newsletter{{ id }} .email').keypress(function (e) {
+	    if (e.which == 13) {
+	        Subscribe();
+	    }
+	});
+});
+</script>

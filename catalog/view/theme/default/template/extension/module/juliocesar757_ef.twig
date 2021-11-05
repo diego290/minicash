@@ -1,0 +1,107 @@
+<form class="form-horizontal" id="estimativa-frete">
+	<div>
+		<input type="text" name="postcode" value="{{ postcode }}" placeholder="{{ entry_postcode }}" id="input-postcode" class="form-control ef-input" />
+		<input type="button" value="{{ button_calcular }}" id="ef-button-quote" data-loading-text="{{ text_loading }}" class="btn btn-primary button" />
+		<div style="clear:both"></div>
+	</div>
+	<div id="ef-zone-id" style="display:none;">
+		{{ entry_zone }}
+		<select name="zone_id" id="input-zone" class="form-control">
+		  <option value="">{{ text_select }}</option>
+		  {% for zone in zones %}
+		  {% if zone.zone_id == zone_id %}
+		  <option value="{{ zone.zone_id }}" selected="selected">{{ zone.name }}</option>
+		  {% else %}
+		  <option value="{{ zone.zone_id }}">{{ zone.name }}</option>
+		  {% endif %}
+		  {% endfor %}
+		</select> 
+	</div>
+	<input type="hidden" name="country_id" value="{{ country_id }}" />
+</form>
+<script type="text/javascript"><!--
+$('#ef-button-quote').on('click', function() {
+	$.ajax({
+		url: 'index.php?route=extension/module/juliocesar757_ef/quote',
+		type: 'post',
+		data: $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea, #estimativa-frete input[type=\'text\'], #estimativa-frete input[type=\'hidden\'], #estimativa-frete select'),
+		dataType: 'json',
+		beforeSend: function() {
+			$('.alert, .text-danger').remove();
+			$('#ef-button-quote').button('loading');
+			$('.ef-result-box').empty();
+			$('.ef-result-box').hide();
+		},
+		complete: function() {
+			$('#ef-button-quote').button('reset');
+		},
+		success: function(json) {
+			$('.alert, .text-danger').remove();
+
+			if (json['error']) {
+				if (json['error']['warning']) {
+					$('.breadcrumb').after('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error']['warning'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+
+					$('html, body').animate({ scrollTop: 0 }, 'slow');
+				}
+
+				if (json['error']['country']) {
+					$('input[name=\'country_id\']').after('<div class="text-danger">' + json['error']['country'] + '</div>');
+				}
+
+				if (json['error']['zone']) {
+					$('select[name=\'zone_id\']').after('<div class="text-danger">' + json['error']['zone'] + '</div>');
+					$('#ef-zone-id').show();
+				}
+
+				if (json['error']['postcode']) {
+					$('input[name=\'postcode\']').after('<div class="text-danger">' + json['error']['postcode'] + '</div>');
+				}
+				
+				if (json['error']['quantity']) {
+					$('input[name=\'quantity\']').after('<div class="text-danger">' + json['error']['quantity'] + '</div>');
+				}	
+
+				if (json['error']['no_shipping']) {
+					$(".ef-result-box").html(json['error']['no_shipping']);
+					$(".ef-result-box").show();
+				}					
+			}
+
+			if (json['shipping_method']) {
+
+				html_content  = '<div class="ef-opcoes-frete">{{ entry_opcoes_frete }}</div>';
+				
+				for (i in json['shipping_method']) {
+					if (!json['shipping_method'][i]['error']) {
+						for (j in json['shipping_method'][i]['quote']) {
+							html_content += '<div class="shipping-item"><span class="shipping-item-list">.</span> ' + json['shipping_method'][i]['quote'][j]['title'] + ' - <span class="shipping-value">' + json['shipping_method'][i]['quote'][j]['text'] + '</span></div>';
+						}
+					} else {
+						html_content += '<div class="alert alert-danger">' + json['shipping_method'][i]['error'] + '</div>';
+					}
+				}
+				$(".ef-result-box").html(html_content);
+				$(".ef-result-box").show();
+			}
+		}
+	});
+});
+
+$('input[name=\'postcode\']').keydown(function (e){
+    if(e.keyCode == 13){
+		event.preventDefault();
+        $('#ef-button-quote').trigger("click");
+    }
+});
+
+$('input[name=\'postcode\']').mask(
+	'00000-000', 
+	{
+	reverse: true, 
+	onComplete: function(cep) {
+			$('#ef-button-quote').trigger("click");
+		}
+	}
+);
+//--></script>

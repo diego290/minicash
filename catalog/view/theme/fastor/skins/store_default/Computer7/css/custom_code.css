@@ -1,0 +1,7 @@
+ .header-type-7 #top .pattern > .container { padding-top: 1px;padding-bottom: 26px; }
+@media (min-width: 1098px) { .header-type-7 #top .search_form { width: 352px !important;max-width: 352px; } }
+@media (max-width: 767px) { .responsive #top .search_form { margin-top: 15px; } }
+
+.body-white-type-2 #mfilter-content-container { margin-top: 30px; }
+.megamenu-type-28 .megamenu-background .vertical .megamenuToogle-wrapper .megamenuToogle-pattern,
+.megamenu-background .vertical .megamenuToogle-wrapper .container { background-image: none !important; }

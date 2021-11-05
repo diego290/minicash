@@ -1,0 +1,19 @@
+<?php
+$_['heading_title'] 		= '';
+$_['button_clear']			= 'Limpar';
+$_['default_value_select'] 	= '- Selecione -';
+$_['price_header']			= 'Por Preço';
+$_['categories_header']	    = 'Por Categorias';
+$_['min_max']				= 'Min - Max:';
+$_['reset']					= 'Limpar Filtro';
+$_['submit']				= 'Aplicar';
+$_['stock_status']          = 'Estoque';
+$_['manufacturers']         = 'Por Marca';
+$_['entry_show_more']       = 'Mostre mais';
+$_['entry_show_less']       = 'Encolher';
+$_['rating']       			= 'Por Avaliação';
+$_['option']       			= 'Por Opção';
+$_['entry_block_title']	    = 'Refinar busca';
+$_['entry_search']	        = 'Palavras-chave';
+$_['text_bf_page_title']	= 'Filtro de Produto';
+$_['empty_slider_value']	= 'Não configurado';

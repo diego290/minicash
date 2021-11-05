@@ -1,0 +1,192 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+     {% set theme_options = registry.get('theme_options') %}
+     {% set config = registry.get('config') %}
+     {% set page_direction = theme_options.get( 'page_direction' ) %} 
+     {% set language_id = config.get( 'config_language_id' ) %}
+     {% set advanced_id = id %} 
+
+     <div class="advanced-grid advanced-grid-{{ advanced_id }} {{ custom_class }} {% if (disable_on_mobile == 1) %} {{ 'hidden-xs hidden-sm' }}{% endif %}" style="margin-top: {{ margin_top }}px;{% if (force_full_width != 1) %}margin-left: {{ margin_left }}px;margin-right: {{ margin_right }}px;{% endif %}margin-bottom: {{ margin_bottom }}px;">
+          {% if (background_image_type == 2) %}<div class="parallax-window" style="{% if (background_color != '') %} {{ 'background-color: ' ~ background_color ~ ';' }} {% endif %} {% if (background_image != '') %} {{ 'background-image: url(image/' ~ background_image ~ ');' }} {% endif %}" data-velocity="-0.4">{% endif %} 
+          {% if (background_image_type == 1) %}<div style="{% if (background_color != '') %} {{ 'background-color: ' ~ background_color ~ ';' }} {% endif %} {% if (background_image != '') %} {{ 'background-image: url(image/' ~ background_image ~ ');' }} {% endif %} {{ 'background-position: ' ~ background_image_position ~ ';background-repeat: ' ~ background_image_repeat ~ ';background-attachment: ' ~ background_image_attachment ~ ';' }}">{% endif %} 
+          {% if (background_image_type == 0) %}<div style="{% if (background_color != '') %} {{ 'background-color: ' ~ background_color ~ ';' }} {% endif %}">{% endif %} 
+                <div class="container">
+                    <div style="padding-top: {{ padding_top }}px;padding-left: {{ padding_left }}px;padding-bottom: {{ padding_bottom }}px;padding-right: {{ padding_right }}px;">
+                         <div class="row">
+                              {% set row = 0 %} 
+                              {% for column in columns %} 
+                                   
+                                   {% if (column['width'] == 'advanced') %}
+                                        {% if (column['width_lg'] != 'hidden') %}
+                                             {% set row = row+column['width_lg'] %}
+                                             {% if (row > 12) %} 
+                                                  {{ '</div><div class="row">' }}
+                                                  {% set row = column['width_lg'] %} 
+                                             {% endif %}
+                                        {% endif %}
+
+                                        {% set column_width = 'col-lg-' ~ column['width_lg'] ~ ' col-md-' ~ column['width_md'] ~ ' col-sm-' ~ column['width_sm'] ~ ' col-xs-' ~ column['width_xs'] ~ '' %}
+                                        {% if (column['width_lg'] == 'hidden') %} 
+                                             {% set column_width = column_width ~ ' hidden-lg' %}
+                                        {% endif %}
+                                        
+                                        {% if (column['width_md'] == 'hidden') %} 
+                                             {% set column_width = column_width ~ ' hidden-md' %}
+                                        {% endif %}
+
+                                        {% if (column['width_sm'] == 'hidden') %} 
+                                             {% set column_width = column_width ~ ' hidden-sm' %}
+                                        {% endif %}
+
+                                        {% if (column['width_xs'] == 'hidden') %} 
+                                             {% set column_width = column_width ~ ' hidden-xs' %}
+                                        {% endif %}
+                                   {% else %} 
+                                        {% set row = row+column['width'] %}
+                                        {% set column_width = 'col-sm-' ~ column['width'] %}
+                                        {% if (column['disable_on_mobile'] == '1') %} 
+                                             {% set column_width = column_width ~ ' hidden-xs' %}
+                                        {% endif %}
+                                        {% if (row > 12) %} 
+                                             {{ '</div><div class="row">' }} 
+                                             {% set row = column['width'] %} 
+                                        {% endif %}
+                                   {% endif %}
+      
+                                   <div class="{{ column_width }}">
+                                        {% for module in column['modules'] %} 
+                                             {% if (module['type'] == 'load_module') %} 
+                                                  {{ module['content']['module'] }} 
+                                             {% elseif (module['type'] == 'html') %} 
+                                                  {{ module['content']['html'] }} 
+                                             {% elseif (module['type'] == 'box') %} 
+                                                  {% if (position == 'footer_bottom' or position == 'footer' or position == 'footer_top' or position == 'footer_left' or position == 'footer_right' or position == 'customfooter_top' or position == 'customfooter_bottom' or position == 'customfooter') %}
+                                                       {{ '<h4>'~module['content']['title']~'</h4>' }}
+                                                       {{ '<div class="strip-line"></div>' }}
+                                                       {{ '<div class="clearfix" style="clear:both">' ~ module['content']['text'] ~ '</div>' }}
+                                                  {% else %} 
+                                                       {{ '<div class="box">' }}
+                                                            {{ '<div class="box-heading">' }}
+                                                                 {{ module['content']['title'] }}
+                                                            {{ '</div>' }}
+                                                            {{ '<div class="strip-line"></div>' }}
+                                                            {{ '<div class="box-content">' }}
+                                                                 {{ module['content']['text'] }}
+                                                            {{ '</div>' }}
+                                                       {{ '</div>' }} 
+                                                  {% endif %}   
+                                             {% elseif (module['type'] == 'links') %} 
+                                                  {% include 'fastor/template/extension/module/advanced_grid/links/' ~ module['content']['module_template']|replace({'.tpl': '.twig'}) %}
+                                             {% elseif (module['type'] == 'newsletter') %} 
+                                                  {% include 'fastor/template/extension/module/advanced_grid/newsletter/' ~ module['content']['module_template']|replace({'.tpl': '.twig'}) %} 
+                                             {% elseif (module['type'] == 'latest_blogs') %} 
+                                                  {% include 'fastor/template/extension/module/advanced_grid/latest_blogs/' ~ module['content']['module_template']|replace({'.tpl': '.twig'}) %} 
+                                             {% elseif (module['type'] == 'products') %} 
+                                                  {% include 'fastor/template/extension/module/advanced_grid/products/' ~ module['content']['module_template']|replace({'.tpl': '.twig'}) %} 
+                                             {% elseif (module['type'] == 'products_tabs') %} 
+                                                  {% include 'fastor/template/extension/module/advanced_grid/products_tabs/' ~ module['content']['module_template']|replace({'.tpl': '.twig'}) %} 
+                                             {% else %} 
+                                                  Unknown error.
+                                             {% endif %} 
+                                        {% endfor %} 
+                                   </div>
+                              {% endfor %}
+                          </div>
+                    </div>
+               </div>
+          </div>
+          
+          {% if (background_image_type == 2) %} 
+          <script type="text/javascript" src="catalog/view/theme/fastor/js/jquery.scrolly.js"></script>
+          <script>
+              $(document).ready(function(){
+                 $('.advanced-grid-{{ advanced_id }} .parallax-window').scrolly({bgParallax: true});
+              });
+          </script>
+          {% endif %} 
+     </div>
+
+     {% if (force_full_width == 1) %} 
+     <script type="text/javascript">
+          function force_full_width_{{ advanced_id }}() {
+               var p = $(".standard-body .full-width .advanced-grid-{{ advanced_id }}");
+               
+               {% if (page_direction[language_id] != 'RTL') %} 
+               if(p.size() > 0) {
+                    p.width($('body').width());
+                    p.css("left", "0px");
+                    var position = p.offset();
+                    p.css("left", "-" + position.left + "px");
+                    p.find(".container").css("padding-left", position.left);
+                    p.find(".container").css("padding-right", position.left);
+                    
+               }
+               {% else %} 
+               if(p.size() > 0) {
+                    p.width($('body').width());
+                    p.css("right", "0px");
+                    var position = p.offset();
+                    p.css("right", "-" + position.left * -1 + "px");
+                    p.find(".container").css("padding-left", position.left * -1);
+                    p.find(".container").css("padding-right", position.left * -1);
+               }
+               {% endif %} 
+               
+               var s = $(".standard-body .fixed .advanced-grid-{{ advanced_id }}");
+               {% if (page_direction[language_id] != 'RTL') %} 
+               if(s.size() > 0) {
+                    s.width($('.standard-body .fixed .pattern').width());
+                    s.css("left", "0px");
+                    var position = s.offset();
+                    var position2 = $('.standard-body .fixed .pattern').offset();
+                    var position3 = position.left-position2.left;
+                    s.css("left", "-" + position3 + "px");
+                    s.find(".container").css("padding-left", position3);
+                    s.find(".container").css("padding-right", position3);
+               }
+               {% else %} 
+               if(s.size() > 0) {
+                    s.width($('.standard-body .fixed .pattern').width());
+                    s.css("right", "0px");
+                    var position = s.offset();
+                    var position2 = $('.standard-body .fixed .pattern').offset();
+                    var position3 = position.left-position2.left;
+                    s.css("right", "-" + position3 * -1 + "px");
+                    s.find(".container").css("padding-left", position3 * -1);
+                    s.find(".container").css("padding-right", position3 * -1);
+               }  
+               {% endif %} 
+               
+               var c = $(".fixed-body .advanced-grid-{{ advanced_id }}");
+               {% if (page_direction[language_id] != 'RTL') %} 
+               if(c.size() > 0) {
+                    c.width($('.fixed-body .main-fixed').width());
+                    c.css("left", "0px");
+                    var position = c.offset();
+                    var position2 = $('.fixed-body .main-fixed').offset();
+                    var position3 = position.left-position2.left;
+                    c.css("left", "-" + position3 + "px");
+                    c.find(".container").css("padding-left", position3);
+                    c.find(".container").css("padding-right", position3);
+               }
+               {% else %} 
+               if(c.size() > 0) {
+                    c.width($('.fixed-body .main-fixed').width());
+                    c.css("right", "0px");
+                    var position = c.offset();
+                    var position2 = $('.fixed-body .main-fixed').offset();
+                    var position3 = position.left-position2.left;
+                    c.css("right", "-" + position3 * -1 + "px");
+                    c.find(".container").css("padding-left", position3 * -1);
+                    c.find(".container").css("padding-right", position3 * -1);
+               }
+               {% endif %} 
+          }
+          
+          force_full_width_{{ advanced_id }}();
+          
+          $(window).resize(function() {
+               force_full_width_{{ advanced_id }}();
+          });
+     </script>
+     {% endif %}
+{% endif %}

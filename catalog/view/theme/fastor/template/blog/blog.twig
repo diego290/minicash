@@ -1,0 +1,132 @@
+{{ header }} 
+{% include 'fastor/template/new_elements/wrapper_top.twig' %}
+{% set theme_options = registry.get('theme_options') %}
+{% set config = registry.get('config') %} 
+{% set page_direction = theme_options.get( 'page_direction' ) %} {% set language_id = config.get( 'config_language_id' ) %}
+
+{% if (articles|length > 0) %}
+    <div class="posts {% if (template == 'grid_3_columns.tpl' or template == 'grid_3_columns.twig') %}posts-3-columns-grid{% endif %} {% if (template == 'grid.tpl' or template == 'grid_3_columns.tpl' or template == 'grid.twig' or template == 'grid_3_columns.twig') %} posts-grid {% endif %}">
+         {% include 'fastor/template/blog/article_list/' ~ settings['article_list_template']|replace({'.tpl': '.twig'}) %}
+    </div>
+
+    {% if (settings['pagination_type'] == 'STANDARD') %} 
+        <div class="pagination-results">
+           {{ pagination }}
+        </div>
+    {% else %} 
+        {% if (is_more) %}
+            <div class="pagination-ajax">
+                 <a data-page="2" id="load-more" class="button">{{ button_load_more }}</a>
+            </div>
+        {% endif %} 
+    {% endif %} 
+{% endif %} 
+    
+<script>
+    
+    function initSlider()
+    {
+        $('.posts .media-slider').each(function(){
+            if(!$(this).hasClass('owl-carousel')){
+                $(this).owlCarousel({
+                    navigation : true, // Show next and prev buttons
+                    slideSpeed : 300,
+                    paginationSpeed : 400,
+                    singleItem:true,
+                    pagination: true,
+                    autoHeight : true,
+                    lazyLoad: true,
+                    navigationText: false,
+                    {% if (page_direction[language_id] == 'RTL') %} 
+                    direction: 'rtl'
+                    {% endif %} 
+                });
+            }
+        })
+    }
+    
+    function isMore(page)
+    {
+        $.ajax({
+            url: location.href,
+            type: 'get',
+            dataType: 'html',
+            data: { ajax_request: 1, page: page },
+            success: function(data) {
+                if(data == ''){
+                    $('.pagination-ajax').hide();
+                };
+            },
+            error: function(){
+                $('.pagination-ajax').hide();
+            }
+        });
+    }
+    
+    var $grid = {};
+    
+    function initMasonry(){
+         $grid = $('.posts').masonry({
+            itemSelector: '.post',
+            
+          })
+        $grid.imagesLoaded().progress( function() {
+            $grid.masonry('layout');
+            initSlider();
+        });
+    }
+    
+    $(function(){
+        initSlider();
+        
+        {% if (template == 'grid.tpl' or template == 'grid_3_columns.tpl' or template == 'grid.twig' or template == 'grid_3_columns.twig') %}
+        initMasonry();
+        {% endif %} 
+                
+        
+        $('#load-more').click(function(){
+            var page = $(this).attr('data-page');
+            $.ajax({
+                url: location.href,
+                type: 'get',
+                dataType: 'html',
+                data: { ajax_request: 1, page: page },
+                beforeSend: function() {
+                    $('#load-more').button('loading');
+                },
+                complete: function() {
+                    $('#load-more').button('reset');
+                },
+                success: function(data) {
+                    if(data == ''){
+                        $('.pagination-ajax').fadeOut();
+                        return;
+                    }
+                    
+                    {% if (template == 'grid.tpl' or template == 'grid_3_columns.tpl' or template == 'grid.twig' or template == 'grid_3_columns.twig') %}
+                        // prepend items to grid
+                        //$grid.imagesLoaded().progress( function() {
+                            $('.posts').append( data);
+                            initSlider();
+                            $('.posts').masonry( 'reloadItems' ).masonry({ sortBy: 'original-order' });
+                            setTimeout(function(){ $('.posts').masonry( 'reloadItems' ).masonry({ sortBy: 'original-order' });}, 500);
+                       // });
+                   {% else %} 
+                        $('.posts').append('<div class="ajax-content" style="display: none">' + data + '</div>');
+                    
+                        $('.posts .ajax-content').last().fadeIn('slow', function(){
+                            initSlider();
+                        });
+                   {% endif %} 
+                    
+                    
+                    $('#load-more').attr('data-page', parseInt(++page));
+                    isMore(page);
+                }
+            });
+        })
+    })
+</script>
+
+{% include 'fastor/template/new_elements/wrapper_bottom.twig' %}
+{{ footer }}

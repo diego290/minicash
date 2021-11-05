@@ -1,0 +1,15 @@
+<div class="box box-no-advanced">
+  <div class="box-heading">{{ heading_title }}</div>
+  <div class="strip-line"></div>
+  <div class="box-content">
+    <p style="text-align: center;">{{ text_store }}</p>
+    {% for store in stores %} 
+    {% if (store['store_id'] == store_id) %} 
+    <a href="{{ store['url'] }}"><b>{{ store['name'] }}</b></a><br />
+    {% else %} 
+    <a href="{{ store['url'] }}">{{ store['name'] }}</a><br />
+    {% endif %} 
+    {% endfor %} 
+    <br />
+  </div>
+</div>

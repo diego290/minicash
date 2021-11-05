@@ -1,0 +1,31 @@
+{{ '<div class="box antique-products games-products pink">' }}
+     {{ '<div class="box-heading">' }}
+          {{ module['content']['title'] }}
+     {{ '</div>' }}
+     {{ '<div class="strip-line"></div>' }}
+     {{ '<div class="box-content products">' }}
+           {{ '<div class="clearfix" style="clear: both"><div class="advanced-grid-products">' }}
+           {% for product in module['content']['products'] %} 
+                {{ '<div class="product clearfix">' }}
+                     {{ '<div class="image"><a href="' ~ product['href'] ~ '">' }}
+                          {% if (theme_options.get( 'lazy_loading_images' ) != '0') %}
+                              {{ '<img src="image/catalog/blank.gif" data-echo="' ~ product['thumb'] ~ '" alt="' ~ product['name'] ~ '" />' }}
+                          {% else %} 
+                              {{ '<img src="' ~ product['thumb'] ~ '" alt="' ~product['name'] ~ '" />' }}
+                          {% endif %}
+                     {{ '</a></div>' }}
+                     {{ '<div class="right">' }}
+                          {{ '<div class="name"><a href="' ~ product['href'] ~ '">' ~ product['name'] ~ '</a></div>' }}
+                          {{ '<div class="price">' }}
+                              {% if (not product['special']) %}
+                               {{ product['price'] }}
+                              {% else %} 
+                               {{ '<span class="price-old">' ~ product['price'] ~ '</span> <span class="price-new">' ~ product['special'] ~ '</span>' }}
+                              {% endif %}
+                          {{ '</div>' }}
+                     {{ '</div>' }}
+                {{ '</div>' }}
+           {% endfor %}
+           {{ '</div></div>' }}
+     {{ '</div>' }}
+{{ '</div>' }} 

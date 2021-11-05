@@ -1,0 +1,39 @@
+<div class="box box-no-advanced">
+  <div class="box-heading">{{ heading_title }}</div>
+  <div class="strip-line"></div>
+  <div class="box-content">
+    <ul class="box-filter">
+      {% for filter_group in filter_groups %} 
+      <li><span id="filter-group{{ filter_group['filter_group_id'] }}">{{ filter_group['name'] }}</span>
+        <ul>
+          {% for filter in filter_group['filter'] %} 
+            {% if filter.filter_id in filter_category %}
+              <li>
+                <input type="checkbox" value="{{ filter['filter_id'] }}" id="filter{{ filter['filter_id'] }}" checked="checked" />
+                <label for="filter{{ filter['filter_id'] }}">{{ filter['name'] }}</label>
+              </li>
+            {% else %} 
+              <li>
+                <input type="checkbox" value="{{ filter['filter_id'] }}" id="filter{{ filter['filter_id'] }}" />
+                <label for="filter{{ filter['filter_id'] }}">{{ filter['name'] }}</label>
+              </li>
+            {% endif %} 
+          {% endfor %} 
+        </ul>
+      </li>
+      {% endfor %} 
+    </ul>
+    <a id="button-filter" class="button">{{ button_filter }}</a>
+  </div>
+</div>
+<script type="text/javascript"><!--
+$('#button-filter').bind('click', function() {
+  filter = [];
+  
+  $('.box-filter input[type=\'checkbox\']:checked').each(function(element) {
+    filter.push(this.value);
+  });
+  
+  location = '{{ action }}&filter=' + filter.join(',');
+});
+//--></script> 

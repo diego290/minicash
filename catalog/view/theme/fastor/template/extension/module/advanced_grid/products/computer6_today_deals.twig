@@ -1,0 +1,90 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+     {% set theme_options = registry.get('theme_options') %}
+     {% set config = registry.get('config') %}
+
+     {{ '<div class="box box-with-products today-deals-computer6">' }}
+          {{ '<div class="box-heading">' }}
+               {{ module['content']['title'] }}
+          {{ '</div>' }}
+          {{ '<div class="clear"></div>' }}
+          {{ '<div class="box-content">' }}
+                {{ '<div class="clearfix" style="clear: both"><div class="today-deals-computer6-products">' }}
+                
+                {% for product in module['content']['products'] %} 
+                                   
+                    {% if (theme_options.get( 'display_specials_countdown' ) == '1' and product['special']) %} 
+                          {% set countdown = random(5000)*random(50000) %} 
+                          {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %}
+                          {% set date_end = product_detail['date_end'] %}
+                          {% if (date_end != '0000-00-00' and date_end) %} 
+                              <script>
+                              $(function () {
+                                   var austDay = new Date();
+                                   austDay = new Date({{ theme_options.date("Y", theme_options.strtotime(date_end)) }}, {{ theme_options.date("m", theme_options.strtotime(date_end)) }} - 1, {{ theme_options.date("d", theme_options.strtotime(date_end)) }});
+                                   $('#countdown{{ countdown }}').countdown({until: austDay});
+                              });
+                              </script>
+                              <div id="countdown{{ countdown }}" class="clearfix"></div>
+                         {% endif %} 
+                    {% endif %} 
+                    
+                    <!-- Product -->
+                    <div class="product clearfix product-hover">
+                         <div class="left">
+                              {% if (product['thumb']) %} 
+                                   {% if (product['special'] and theme_options.get( 'display_text_sale' ) != '0') %} 
+                                        {% set text_sale = 'Sale' %}
+                                        {% if (theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) != '') %}
+                                             {% set text_sale = theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) %}
+                                        {% endif %} 
+                                        {% if (theme_options.get( 'type_sale' ) == '1') %} 
+                                             {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %}
+                                             {% set roznica_ceny = product_detail['price']-product_detail['special'] %}
+                                             {% set procent = roznica_ceny*100/product_detail['price'] %} 
+                                             <div class="sale">-{{ procent|round }}%</div>
+                                        {% else %} 
+                                             <div class="sale">{{ text_sale }}</div>
+                                        {% endif %} 
+                                    {% elseif (theme_options.get( 'display_text_new' ) != '0' and theme_options.isLatestProduct( product['product_id'] )) %} 
+                                         <div class="new">{% if (theme_options.get( 'new_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'new_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'New' }} {% endif %}</div>
+                                    {% endif %} 
+                                   
+                                   <div class="image {% if (theme_options.get( 'product_image_effect' ) == '1') %} {{ 'image-swap-effect' }} {% endif %}">
+                                        <a href="{{ product['href'] }}">
+                                             {% if (theme_options.get( 'product_image_effect' ) == '1') %}
+                                                  {% set nthumb = product['thumb']|replace({' ': "%20"}) %}
+                                                  {% set adres = constant('HTTP_SERVER') %}
+                                                  {% set nthumb = nthumb|replace({adres: ""}) %}
+                                                  {% set image_size = theme_options.getimagesize(nthumb) %}
+                                                  {% set image_swap = theme_options.productImageSwap(product['product_id'], image_size[0], image_size[1]) %}
+                                                  {% if (image_swap != '') %} {{ '<img src="' ~ image_swap ~ '" alt="' ~ product['name'] ~ '" class="swap-image" />' }}{% endif %}
+                                             {% endif %} 
+                                             {% if (theme_options.get( 'lazy_loading_images' ) != '0') %} 
+                                             <img src="image/catalog/blank.gif" data-echo="{{ product['thumb'] }}" alt="{{ product['name'] }}" class="{% if (theme_options.get( 'product_image_effect' ) == '2') %} {{ 'zoom-image-effect' }} {% endif %}" />
+                                             {% else %} 
+                                             <img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" class="{% if (theme_options.get( 'product_image_effect' ) == '2') %} {{ 'zoom-image-effect' }} {% endif %}" />
+                                             {% endif %} 
+                                        </a>
+                                   </div>
+                              {% else %} 
+                                   <div class="image">
+                                        <a href="{{ product['href'] }}"><img src="image/no_image.jpg" alt="{{ product['name'] }}" {% if (theme_options.get( 'product_image_effect' ) == '2') %} {{ 'class="zoom-image-effect"' }} {% endif %} /></a>
+                                   </div>
+                              {% endif %} 
+                         </div>
+                         <div class="right">
+                              <div class="name"><a href="{{ product['href'] }}">{{ product['name'] }}</a></div>
+                              <div class="price">
+                                   {% if (not product['special']) %} 
+                                   {{ product['price'] }} 
+                                   {% else %} 
+                                   <span class="price-old">{{ product['price'] }}</span> <span class="price-new">{{ product['special'] }}</span>
+                                   {% endif %} 
+                              </div>
+                         </div>
+                    </div>
+                {% endfor %}
+                {{ '</div></div>' }}
+          {{ '</div>' }}
+     {{ '</div>' }}  
+{% endif %}

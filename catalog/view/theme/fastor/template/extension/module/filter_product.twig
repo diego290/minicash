@@ -1,0 +1,145 @@
+{% set theme_options = registry.get('theme_options') %}
+{% set config = registry.get('config') %}
+{% set page_direction = theme_options.get( 'page_direction' ) %}
+{% set language_id = config.get( 'config_language_id' ) %}
+{% set class = 3 %} 
+{% set id = random(50000)*random(500000) %}
+{% set all = cols*itemsperpage %} 
+{% set row = itemsperpage %} 
+
+{% if (itemsperpage == 1) %} {% set class = 12 %}{% endif %}
+{% if (itemsperpage == 2) %} {% set class = 6 %}{% endif %}
+{% if (itemsperpage == 3) %} {% set class = 4 %}{% endif %}
+{% if (itemsperpage == 4) %} {% set class = 3 %}{% endif %}
+{% if (itemsperpage == 5) %} {% set class = 25 %}{% endif %}
+{% if (itemsperpage == 6) %} {% set class = 2 %}{% endif %}
+
+{% if (tabs|length > 1 ) %} 
+<div class="filter-product">
+	<div class="filter-tabs">
+		<div class="bg-filter-tabs"><div class="bg-filter-tabs2 clearfix">
+		<ul id="tab{{ id }}">
+			{% set i = 0 %} 
+			{% for tab in tabs %} 
+				<li {% if i == 0 %}class="active"{% endif %}><a href="#{{ tab['title'] }}-{{ id }}-{{ i }}">{{ tab['heading'] }}</a></li>
+			{% set i = i + 1 %} 
+			{% endfor %} 
+		</ul>
+		</div></div>
+	</div>
+	
+	<div class="tab-content clearfix">
+		{% set s = 0 %} 
+		{% for tab in tabs %} 
+		<div class="tab-pane {% if (s == 0) %} {{ 'active' }} {% endif %}" id="{{ tab['title']~'-'~id~'-'~s }}">
+			{% if (carousel != 0) %} 
+			<!-- Carousel nav -->
+			<a class="next-button" href="#myCarousel{{ id~'-'~s }}" id="myCarousel{{ id~'-'~s }}_next"><span></span></a>
+			<a class="prev-button" href="#myCarousel{{ id~'-'~s }}" id="myCarousel{{ id~'-'~s }}_prev"><span></span></a>
+
+			<script type="text/javascript">
+			$(document).ready(function() {
+			  var owl{{ id ~ '_' ~ s }} = $(".filter-product #myCarousel{{ id~'-'~s }} .carousel-inner");
+				
+			  $("#myCarousel{{ id~'-'~s }}_next").click(function(){
+			      owl{{ id ~ '_' ~ s }}.trigger('owl.next');
+			      return false;
+			    })
+			  $("#myCarousel{{ id~'-'~s }}_prev").click(function(){
+			      owl{{ id ~ '_' ~ s }}.trigger('owl.prev');
+			      return false;
+			  });
+			    
+			  owl{{ id ~ '_' ~ s }}.owlCarousel({
+			  	  slideSpeed : 500,
+			      singleItem:true,
+			      {% if (page_direction[language_id] == 'RTL') %} 
+			      direction: 'rtl'
+			      {% endif %} 
+			   });
+			});
+			</script>
+			 {% endif %}
+			
+			<div class="box-product">
+				<div id="myCarousel{{ id~'-'~s }}" {% if (carousel != 0) %}class="carousel slide"{% endif %}>
+					<!-- Carousel items -->
+					<div class="carousel-inner">
+						{% set i = 0 %} {% set row_fluid = 0 %} {% for product in tab['products'] %} {% set row_fluid = row_fluid + 1 %} 
+			    			{% if (i == 0) %} {{ '<div class="active item"><div class="product-grid"><div class="row">' }} {% endif %} 
+			    			{% set r=row_fluid-(row_fluid/all)|round(0, 'floor')*all %} {% if (row_fluid>all and r == 1) %} {{ '</div></div></div><div class="item"><div class="product-grid"><div class="row">' }} {% else %} {% set r=row_fluid-(row_fluid/row)|round(0, 'floor')*row %} {% if (row_fluid>row and r == 1) %} {{ '</div><div class="row">' }} {% endif %} {% endif %} 
+			    			<div class="col-sm-{{ class }} col-xs-6 {% if (class == 2) %} {{ 'col-md-25 col-lg-2 col-sm-3 ' }} {% endif %} {% if (class == 2 and r == 0) %} {{ 'hidden-md hidden-sm' }} {% endif %} {% if (class == 2 and r == 5) %} {{ 'hidden-sm' }} {% endif %} {% if (class == 25) %} {{ 'col-md-25 col-lg-25 col-sm-3 ' }} {% endif %} {% if (class == 25 and r == 0) %} {{ 'hidden-sm' }} {% endif %}">
+			    				{% include 'fastor/template/new_elements/product.twig' %}
+			    			</div>
+						{% set i = i + 1 %} {% endfor %} 
+						{% if (i > 0) %} {{ '</div></div></div>' }} {% endif %} 
+					</div>
+				</div>
+			</div>
+		</div>
+		{% set s = s + 1 %} 
+		{% endfor %} 
+	</div>
+</div>
+ 
+<script type="text/javascript">
+$('#tab{{ id }} a').click(function (e) {
+  e.preventDefault();
+  $(this).tab('show');
+});
+</script>
+{% else %} 
+{% for tab in tabs %} 
+<div class="box clearfix box-with-products {% if (carousel != '0') %} {{ 'with-scroll' }} {% endif %} box-no-advanced">
+  {% if (carousel != 0) %} 
+  <!-- Carousel nav -->
+  <a class="next" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_next"><span></span></a>
+  <a class="prev" href="#myCarousel{{ id }}" id="myCarousel{{ id }}_prev"><span></span></a>
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+    var owl{{ id }} = $(".box #myCarousel{{ id }} .carousel-inner");
+  	
+    $("#myCarousel{{ id }}_next").click(function(){
+        owl{{ id }}.trigger('owl.next');
+        return false;
+      })
+    $("#myCarousel{{ id }}_prev").click(function(){
+        owl{{ id }}.trigger('owl.prev');
+        return false;
+    });
+      
+    owl{{ id }}.owlCarousel({
+    	  slideSpeed : 500,
+        singleItem:true,
+        {% if (page_direction[language_id] == 'RTL') %} 
+        direction: 'rtl'
+        {% endif %} 
+     });
+  });
+  </script>
+  {% endif %}
+	
+  <div class="box-heading">{{ tab['heading'] }}</div>
+  <div class="strip-line"></div>
+  <div class="clear"></div>
+  <div class="box-content products">
+    <div class="box-product">
+    	<div id="myCarousel{{ id }}" {% if (carousel != 0) %}class="carousel slide"{% endif %}>
+    		<!-- Carousel items -->
+    		<div class="carousel-inner">
+    			{% set i = 0 %} {% set row_fluid = 0 %} {% set item = 0 %} {% for product in tab['products'] %} {% set row_fluid = row_fluid + 1 %} 
+	    			{% if (i == 0) %} {% set item = item + 1 %} {{ '<div class="active item"><div class="product-grid"><div class="row">' }} {% endif %} 
+	    			{% set r=row_fluid-(row_fluid/all)|round(0, 'floor')*all %} {% if (row_fluid>all and r == 1) %} {% if (carousel != '0') %} {{ '</div></div></div><div class="item"><div class="product-grid"><div class="row">' }} {% set item = item + 1 %} {% else %} {{ '</div><div class="row">' }} {% endif %} {% else %} {% set r=row_fluid-(row_fluid/row)|round(0, 'floor')*row %} {% if (row_fluid>row and r == 1) %} {{ '</div><div class="row">' }} {% endif %} {% endif %} 
+	    			<div class="col-sm-{{ class }} col-xs-6 {% if (class == 2) %} {{ 'col-md-25 col-lg-2 col-sm-3 ' }} {% endif %} {% if (class == 2 and r == 0) %} {{ 'hidden-md hidden-sm' }} {% endif %} {% if (class == 2 and r == 5) %} {{ 'hidden-sm' }} {% endif %} {% if (class == 25) %} {{ 'col-md-25 col-lg-25 col-sm-3 ' }} {% endif %} {% if (class == 25 and r == 0) %} {{ 'hidden-sm' }} {% endif %}">
+	    				{% include 'fastor/template/new_elements/product.twig' %}
+	    			</div>
+    			{% set i = i + 1 %} {% endfor %} 
+    			{% if (i > 0) %} {{ '</div></div></div>' }} {% endif %} 
+    		</div>
+		</div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endif %} 

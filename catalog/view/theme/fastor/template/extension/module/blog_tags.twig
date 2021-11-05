@@ -1,0 +1,15 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+    <div class="box blog-module blog-tags">
+        <div class="box-heading">{{ heading_title }}</div>
+        <div class="strip-line"></div>
+        <div class="box-content box-tags">
+            {% if (tags is not empty) %}
+            <div class="tagcloud">
+                {% for tag in tags %} 
+                <a href="{{ tag['href'] }}">{{ tag['tag'] }}</a> 
+                {% endfor %} 
+            </div>
+            {% endif %} 
+        </div>
+    </div>
+{% endif %}

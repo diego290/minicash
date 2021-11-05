@@ -1,0 +1,30 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+    {% set theme_options = registry.get('theme_options') %}
+    {% if (articles|length > 0) %} 
+    <div class="box blog-module blog-product-related-posts box-no-advanced">
+        <div class="box-heading">{{ heading_title }}</div>
+        <div class="strip-line"></div>
+        <div class="box-content box-product-related-posts">
+            <ul class="blog-list-default">
+                {% for article in articles %}
+                <li>
+                    <div class="media">
+                        <a href="{{ article['href'] }}">
+                            {% if (article['thumb']) %}
+                            <div  class="thumb-holder">
+                                <img alt="" src="{{ article['thumb'] }}">
+                            </div>
+                            {% endif %} 
+                            <div class="media-body">
+                                <div class="date-published">{{ theme_options.date('d.m.Y', theme_options.strtotime(article['date_published'])) }}</div>
+                                <h5>{{ article['title'] }}</h5>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+                {% endfor %} 
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+{% endif %}

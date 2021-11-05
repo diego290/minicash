@@ -1,0 +1,80 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+   {% set theme_options = registry.get('theme_options') %}
+   {% set config = registry.get('config') %}
+   {% set page_direction = theme_options.get( 'page_direction' ) %} 
+   {% set language_id = config.get( 'config_language_id' ) %}
+
+    {{ '<div class="box today-deals box-no-advanced">' }}
+     {{ '<a class="next" href="#myCarousel_today_deals" id="myCarousel_today_deals_next"><span></span></a>' }}
+     {{ '<a class="prev" href="#myCarousel_today_deals" id="myCarousel_today_deals_prev"><span></span></a>' }}
+      {{ '<div class="box-heading">' }}
+        {{ module['content']['title'] }}
+      {{ '</div>' }}
+      {{ '<div class="strip-line"></div>' }}
+      {{ '<div class="box-content products" id="myCarousel_today_deals">' }}
+         {{ '<div class="clearfix" style="clear: both"><div class="today-deals-products owl-carousel">' }}
+         {% for product in module['content']['products'] %} 
+           {{ '<div class="product clearfix item">' }}
+           {{ '<div class="image"><a href="' ~ product['href'] ~ '">' }}
+           {% if (theme_options.get( 'lazy_loading_images' ) != '0') %}
+            {{ '<img src="image/catalog/blank.gif" data-echo="' ~ product['thumb'] ~ '" alt="' ~ product['name'] ~ '" />' }}
+           {% else %} 
+            {{ '<img src="' ~ product['thumb'] ~ '" alt="' ~product['name'] ~ '" />' }}
+           {% endif %}
+           {{ '</a></div>' }} 
+               
+          {% if (theme_options.get( 'display_specials_countdown' ) == '1' and product['special']) %} {% set countdown = random(5000)*random(50000) %} 
+              {% set product_detail = theme_options.getDataProduct( product['product_id'] ) %}
+              {% set date_end = product_detail['date_end'] %}
+              {% if (date_end != '0000-00-00' and date_end) %} 
+                  <script>
+                  $(function () {
+                    var austDay = new Date();
+                    austDay = new Date({{ theme_options.date("Y", theme_options.strtotime(date_end)) }}, {{ theme_options.date("m", theme_options.strtotime(date_end)) }} - 1, {{ theme_options.date("d", theme_options.strtotime(date_end)) }});
+                    $('#countdown{{ countdown }}').countdown({until: austDay});
+                  });
+                  </script>
+                  <div id="countdown{{ countdown }}" class="clearfix"></div>
+              {% endif %} 
+          {% endif %} 
+                                   
+           {{ '<div class="right">' }}
+           {{ '<div class="name"><a href="' ~ product['href'] ~ '">' ~ product['name'] ~ '</a></div>' }}
+           {{ '<div class="price">' }}
+            {% if (not product['special']) %}
+             {{ product['price'] }}
+            {% else %} 
+             {{ '<span class="price-old">' ~ product['price'] ~ '</span> <span class="price-new">' ~ product['special'] ~ '</span>' }}
+            {% endif %}
+           {{ '</div>' }}
+           {{ '</div>' }}
+           {{ '<a onclick="cart.add(\'' ~ product['product_id'] ~ '\');" class="button btn-default">' ~ button_cart ~ '</a>' }}
+           {{ '</div>' }}
+         {% endfor %}
+         {{ '</div></div>' }}
+      {{ '</div>' }}
+    {{ '</div>' }}   
+    
+  <script type="text/javascript">
+  $(document).ready(function() {
+    var owltodaydeals = $(".box #myCarousel_today_deals .today-deals-products");
+    
+    $("#myCarousel_today_deals_next").click(function(){
+        owltodaydeals.trigger('owl.next');
+        return false;
+      })
+    $("#myCarousel_today_deals_prev").click(function(){
+        owltodaydeals.trigger('owl.prev');
+        return false;
+    });
+      
+    owltodaydeals.owlCarousel({
+        slideSpeed : 500,
+         singleItem:true,
+         {% if (page_direction[language_id] == 'RTL') %} 
+         direction: 'rtl'
+         {% endif %} 
+     });
+  });
+  </script>
+{% endif %}

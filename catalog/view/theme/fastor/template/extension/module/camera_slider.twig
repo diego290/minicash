@@ -1,0 +1,47 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %}
+	{% set page_direction = theme_options.get( 'page_direction' ) %} 
+		{% set language_id = config.get( 'config_language_id' ) %} 
+	<div class="{% if (slider['settings']['layout_type'] == 1) %} {{ 'container' }} {% else %} {{ 'fullwidth' }} {% endif %}" id="camera_{{ slider['id'] }}">
+		<div class="camera_slider">
+			<div class="spinner"></div>
+			<div class="camera_wrap" id="camera_wrap_{{ slider['id'] }}" class="carousel-inner" style="height: {{ slider['settings']['slider_height'] }}px">
+				{% for sliders in slider['content'] %} 
+					{% if (sliders[language_id]['status'] == 1) %} 
+						{% set link = constant('false') %}
+						{% set image = sliders[language_id]['slider'] %}
+						
+						{% if (sliders[language_id]['link'] != '') %}
+							{% set link = sliders[language_id]['link'] %}
+						{% endif %} 
+
+						<div>{% if (link) %} {{ '<a href="' ~ link ~ '">' }} {% endif %}<img src="image/{{ image }}" alt="Slider">{% if (link) %} {{ '</a>' }} {% endif %}</div>
+					{% endif %}
+				{% endfor %} 
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	 var camera_slider = $("#camera_wrap_{{ slider['id'] }}");
+	     
+	 camera_slider.owlCarousel({
+	 	 slideSpeed : 300,
+	  	 lazyLoad : true,
+	     singleItem: true,
+	     autoPlay: 13000,
+	     stopOnHover: true,
+	     navigation: true,
+	     {% if (page_direction[language_id] == 'RTL') %} 
+	     direction: 'rtl',
+	     {% endif %} 
+	     navigationText: false
+	  });
+	  
+	$(window).load(function() {	
+	  $("#camera_{{ slider['id'] }} .spinner").fadeOut(200);
+	  $("#camera_wrap_{{ slider['id'] }}").css("height", "auto");
+	});	
+	</script>
+{% endif %}

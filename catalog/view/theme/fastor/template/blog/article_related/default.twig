@@ -1,0 +1,44 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+ {% set theme_options = registry.get('theme_options') %}
+ {% set class = 'col-sm-3 col-xs-6' %}
+ {% if (settings['article_related_per_row'] == 6) %} {% set class = 'col-sm-2 col-xs-6' %} {% endif %}
+ {% if (settings['article_related_per_row'] == 5) %} {% set class = 'col-sm-25 col-xs-6' %} {% endif %}
+ {% if (settings['article_related_per_row'] == 3) %} {% set class = 'col-sm-4 col-xs-12' %} {% endif %}
+ 
+  <div class="box blog-module box-no-advanced">
+      <div class="box-heading">{{ text_related_articles }}</div>
+      <div class="strip-line"></div>
+      <div class="box-content">
+          {% if (articles|length > 0) %} 
+          <div class="news v1 row">
+              {% for article2 in articles %}
+              <div class="{{ class }}">
+                  <div class="media">
+                          {% if (article2['thumb']) %}
+                          <div  class="thumb-holder">
+                              <img alt="" src="{{ article2['thumb'] }}"></a>
+                          </div>
+                          {% endif %} 
+                          
+                          <div class="media-body" onclick="window.location.href = '{{ article2['href'] }}'">
+                               <div class="tags">
+                                    {% set s = 0 %} 
+                                      {% for tag in article2['tags'] %} 
+                                         {% if (s < 2) %}<a href="{{ tag['href'] }}">{{ tag['tag'] }}</a>{% endif %} 
+                                    {% set s = s + 1 %} 
+                                    {% endfor %} 
+                               </div>
+                               
+                               <div class="bottom">
+                                   <div class="date-published">{{ theme_options.date('d.m.Y', theme_options.strtotime(article2['date_published'])) }}</div>
+                                   <h5>{{ article2['title'] }}</h5>
+                               </div>
+                          </div>
+                  </div>
+              </div>
+              {% endfor %} 
+          </div>
+          {% endif %} 
+      </div>
+  </div>
+{% endif %}

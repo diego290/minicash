@@ -1,0 +1,7 @@
+ .box .clear { display: none; }
+.product-grid-type-8 .product-grid .product .name a { font-weight: 500;font-size: 15px; }
+.footer-type-24 .footer ul li a { line-height: 30px; }
+.footer-type-24 .footer { font-weight: 600; }
+.tab-content:before,
+.tab-content:after { display: none; }
+body[class*="product-category-"].body-white .standard-body .full-width .center-column.content-without-background { padding-top: 30px; }

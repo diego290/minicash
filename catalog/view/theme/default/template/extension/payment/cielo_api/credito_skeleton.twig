@@ -1,0 +1,296 @@
+<link href="catalog/view/theme/default/template/extension/payment/cielo_api/assets/css/normalize.css?v={{ versao }}" rel="stylesheet" type="text/css" />
+<link href="catalog/view/theme/default/template/extension/payment/cielo_api/assets/css/skeleton.css?v={{ versao }}" rel="stylesheet" type="text/css" />
+{% if habilitado %}
+<style id="outside"> #responsivo { display: none; } </style>
+<style>
+  #responsivo .button.button-primary,
+  #responsivo button.button-primary,
+  #responsivo input[type="submit"].button-primary,
+  #responsivo input[type="reset"].button-primary,
+  #responsivo input[type="button"].button-primary {
+    color: {{ cor_normal_texto }};
+    background-color: {{ cor_normal_fundo }};
+    border-color: {{ cor_normal_borda }};
+  }
+  #responsivo .button.button-primary:hover,
+  #responsivo button.button-primary:hover,
+  #responsivo input[type="submit"].button-primary:hover,
+  #responsivo input[type="reset"].button-primary:hover,
+  #responsivo input[type="button"].button-primary:hover,
+  #responsivo .button.button-primary:focus,
+  #responsivo button.button-primary:focus,
+  #responsivo input[type="submit"].button-primary:focus,
+  #responsivo input[type="reset"].button-primary:focus,
+  #responsivo input[type="button"].button-primary:focus {
+    color: {{ cor_efeito_texto }};
+    background-color: {{ cor_efeito_fundo }};
+    border-color: {{ cor_efeito_borda }};
+  }
+</style>
+<div id="responsivo">
+  {% if ambiente %}
+  <div class="alert alert-warning">{{ text_sandbox }}</div>
+  {% endif %}
+  {{ instrucoes }}
+  <h4><strong>{{ text_detalhes }}</strong></h4>
+  <hr>
+  <form onkeypress="return event.keyCode != 13" id="payment">
+    <div class="row-form" id="bandeiras"></div>
+    <hr>
+    <div class="row-form">
+      <div class="four columns value">
+        <label>{{ entry_cartao }}<span id='bandeira'></span>:</label>
+        <input type="text" name="cartao" value="" placeholder="" maxlength="19" autocomplete="off" class="u-full-width" inputmode="numeric" />
+      </div>
+      <div class="four columns value">
+        <label>{{ entry_nome }}</label>
+        <input type="text" name="nome" value="" placeholder="" maxlength="30" autocomplete="off" class="u-full-width" />
+      </div>
+      <div class="four columns value" id="parcelas"></div>
+    </div>
+    <div class="row-form">
+      <div class="four columns value" id="meses"></div>
+      <div class="four columns value" id="anos"></div>
+      <div class="four columns value">
+        <label>{{ entry_codigo }}</label>
+        <input type="text" name="codigo" value="" placeholder="" maxlength="4" autocomplete="off" class="u-full-width" inputmode="numeric" />
+      </div>
+    </div>
+    {% if captcha %}
+    <div class="row-form">
+      <div class="twelve columns value">
+        <label>{{ entry_captcha }}</label>
+        <input type="hidden" name="g-recaptcha-response" value="" />
+        <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+      </div>
+    </div>
+    {% endif %}
+    <hr>
+    <div id="alerta">{% if alerta %}<div class="alert alert-warning" id="warning">{{ alerta }}</div>{% endif %}</div>
+    <input class="button-primary" value="{{ texto_botao }}" id="button-confirm" data-loading-text="{{ text_carregando }}" type="button">
+  </form>
+</div>
+<script type="text/javascript" src="catalog/view/theme/default/template/extension/payment/cielo_api/assets/js/jquery.loadingoverlay.min.js?v={{ versao }}"></script>
+{% if captcha %}
+<script src="//www.google.com/recaptcha/api.js" type="text/javascript"></script>
+{% endif %}
+<script type="text/javascript"><!--
+  function meses() {
+    json = {{ meses }};
+    html = '<label>{{ entry_validade_mes }}</label>';
+    html += '<select name="mes" class="u-full-width">';
+    html += '<option value="">{{ text_mes }}</option>';
+    for (i = 0; i <= json.length-1; i++) {
+      html += '<option value="' + json[i]['value'] + '">' + json[i]['text'] + '</option>';
+    }
+    html += '</select>';
+    $('#meses').html(html);
+  };
+  meses();
+  function anos() {
+    json = {{ anos }};
+    html = '<label>{{ entry_validade_ano }}</label>';
+    html += '<select name="ano" class="u-full-width">';
+    html += '<option value="">{{ text_ano }}</option>';
+    for (i = 0; i <= json.length-1; i++) {
+      html += '<option value="' + json[i]['value'] + '">' + json[i]['text'] + '</option>';
+    }
+    html += '</select>';
+    $('#anos').html(html);
+  };
+  anos();
+  function parcelas(bandeira) {
+    $('#payment select[name="parcelas"]').html('');
+    $('#bandeira').html('');
+    $('#bandeira').html(bandeira.toUpperCase());
+    $.ajax({
+      url: 'index.php?route=extension/payment/cielo_api_credito/parcelas&token={{ token }}&bandeira=' + bandeira,
+      dataType: 'json',
+      cache: false,
+      beforeSend: function() {
+        $('#payment select[name="parcelas"]').html('<option value="">{{ text_carregando }}</option>');
+        $('{{ container_botao }}').button('loading');
+        $('input').prop('disabled', true);
+        $('select').prop('disabled', true);
+        $('button').prop('disabled', true);
+      },
+      complete: function() {
+        $('{{ container_botao }}').button('reset');
+        $('input').prop('disabled', false);
+        $('select').prop('disabled', false);
+        $('button').prop('disabled', false);
+      },
+      success: function(json) {
+        html = '<label>{{ entry_parcelas }}</label>';
+        html += '<select name="parcelas" style="display: inline;" class="u-full-width">';
+        for (i = 0; i <= json.length-1; i++) {
+          if (json[i]['parcela'] == '1') {
+            if (json[i]['desconto'] != 0) {
+              html += '<option value="1">' + json[i]['parcela'] + 'x{{ text_de }}' + json[i]['valor'] + '{{ text_total }}' + json[i]['total'] + ' (-' + json[i]['desconto'] + ')</option>';
+            } else {
+              html += '<option value="1">' + json[i]['parcela'] + 'x{{ text_de }}' + json[i]['valor'] + '{{ text_total }}' + json[i]['total'] + ' ({{ text_sem_juros }})</option>';
+            }
+          } else if (json[i]['juros'] == '0') {
+            html += '<option value="' + json[i]['parcela'] + '">' + json[i]['parcela'] + 'x{{ text_de }}' + json[i]['valor'] + '{{ text_total }}' + json[i]['total'] + ' ({{ text_sem_juros }})</option>';
+          } else {
+            {% if exibir_juros %}
+            html += '<option value="' + json[i]['parcela'] + '">' + json[i]['parcela'] + 'x{{ text_de }}' + json[i]['valor'] + '{{ text_total }}' + json[i]['total'] + ' (' + json[i]['juros'] + '% {{ text_juros }})</option>';
+            {% else %}
+            html += '<option value="' + json[i]['parcela'] + '">' + json[i]['parcela'] + 'x{{ text_de }}' + json[i]['valor'] + '{{ text_total }}' + json[i]['total'] + ' ({{ text_com_juros }})</option>';
+            {% endif %}
+          }
+        }
+        html += '</select>';
+        $('#parcelas').html(html);
+      }
+    });
+  };
+  function bandeiras() {
+    json = {{ bandeiras }};
+    html = '';
+    for (i = 0; i <= json.length-1; i++) {
+      html += '<div class="two columns value">';
+      if (i == '0') {
+        html += '<input type="radio" name="bandeira" value="'+ json[i]['bandeira'] +'" checked />';
+        padrao = json[i]['bandeira'];
+      } else {
+        html += '<input type="radio" name="bandeira" value="'+ json[i]['bandeira'] +'" />';
+      }
+      html += '<img alt="' + json[i]['titulo'] + '" title="' + json[i]['titulo'] + '" src="'+ json[i]['imagem'] +'" border="0" /> ';
+      {% if exibir_parcelas %}
+      html += '<strong>' + json[i]['parcelas'] + 'x</strong>';
+      {% endif %}
+      html += '</div>';
+    }
+    $('#bandeiras').html(html);
+    parcelas(padrao);
+  };
+  bandeiras();
+  function transacao() {
+    {% if captcha %}
+    $('#payment input[name="g-recaptcha-response"]').val(grecaptcha.getResponse());
+    grecaptcha.reset();
+    {% endif %}
+    $.ajax({
+      url: 'index.php?route=extension/payment/cielo_api_credito/transacao&token={{ token }}',
+      type: 'post',
+      data: $('#payment input[type="text"], #payment input[type="hidden"], #payment input[type="radio"]:checked, #payment select'),
+      dataType: 'json',
+      beforeSend: function() {
+        $.LoadingOverlay('show');
+        $('{{ container_botao }}').button('loading');
+        $('input').prop('disabled', true);
+        $('select').prop('disabled', true);
+        $('button').prop('disabled', true);
+      },
+      complete: function() {
+        $('{{ container_botao }}').button('reset');
+        $('input').prop('disabled', false);
+        $('select').prop('disabled', false);
+        $('button').prop('disabled', false);
+        $('#payment select[name="parcelas"]').val('1');
+        $('#payment input[name="nome"]').val('');
+        $('#payment input[name="cartao"]').val('');
+        $('#payment select[name="mes"]').val('');
+        $('#payment select[name="ano"]').val('');
+        $('#payment input[name="codigo"]').val('');
+        {% if captcha %}
+        $('#payment input[name="g-recaptcha-response"]').val('');
+        {% endif %}
+        $.LoadingOverlay('hide');
+      },
+      success: function(json) {
+        $.LoadingOverlay('hide');
+        if (json['error']) {
+          $('#alerta').html('<div class="alert alert-warning" id="warning">'+json['error']+'</div>');
+        } else if (json['redirect']) {
+          $('#button-confirm').hide();
+          $('#alerta').html('<div class="alert alert-success">{{ text_autorizou }}</div>');
+          location.href = json['redirect'];
+        } else {
+          $('#alerta').html('<div class="alert alert-warning" id="warning">{{ error_configuracao }}</div>');
+        }
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        if (jqXHR.status == 404 || jqXHR.status == 500 || errorThrown == 'Not Found') {
+          $('#alerta').html('<div class="alert alert-warning" id="warning">{{ error_configuracao }}</div>');
+        }
+      }
+    });
+  };
+  function validar() {
+    var erros = 0;
+    var campos = {
+      nome: '{{ error_nome }}',
+      cartao: '{{ error_cartao }}',
+      parcelas: '{{ error_parcelas }}',
+      mes: '{{ error_mes }}',
+      ano: '{{ error_ano }}',
+      codigo: '{{ error_codigo }}'
+    };
+
+    $('div #warning').each(function() { $(this).remove(); });
+    $('div .text-danger').each(function() { $(this).remove(); });
+    $('#payment input[type="text"], #payment select').removeClass('alert-danger');
+
+    $('#payment input[type="text"], #payment input[type="radio"]:checked, #payment select').each(function(){
+      for (var chave in campos) {
+        if ($(this).attr('name') == chave) {
+          if ($(this).attr('name') == 'cartao') {
+            if ($.trim($(this).val()).length < 13) {
+              $(this).toggleClass('alert-danger');
+              $(this).after('<div class="text-danger">'+campos[chave]+'</div>');
+              erros++;
+            } else {
+              $(this).removeClass('alert-danger');
+            }
+          } else if ($(this).attr('name') == 'codigo') {
+            if ($('#payment input[name="bandeira"]:checked').val() == 'amex') {
+              if ($.trim($(this).val()).length !== 4) {
+                $(this).toggleClass('alert-danger');
+                $(this).after('<div class="text-danger">'+campos[chave]+'</div>');
+                erros++;
+              } else {
+                $(this).removeClass('alert-danger');
+              }
+            } else {
+              if ($.trim($(this).val()).length !== 3) {
+                $(this).toggleClass('alert-danger');
+                $(this).after('<div class="text-danger">'+campos[chave]+'</div>');
+                erros++;
+              } else {
+                $(this).removeClass('alert-danger');
+              }
+            }
+          } else {
+            if ($.trim($(this).val()).length == 0) {
+              $(this).toggleClass('alert-danger');
+              $(this).after('<div class="text-danger">'+campos[chave]+'</div>');
+              erros++;
+            } else {
+              $(this).removeClass('alert-danger');
+            }
+          }
+        }
+      }
+    });
+
+    if (erros == 0) {
+      transacao();
+    } else {
+      $('{{ container_botao }}').button('loading');
+      $('{{ container_botao }}').button('reset');
+      return false;
+    };
+  };
+  if (self === top) {
+    var outside = document.getElementById('outside');
+    outside.parentNode.removeChild(outside);
+  }
+//--></script>
+<script type="text/javascript" src="catalog/view/theme/default/template/extension/payment/cielo_api/assets/js/credito.js?v={{ versao }}"></script>
+{% else %}
+<div id="responsivo">
+  <div class="alert alert-warning">{{ error_bandeiras }}</div>
+</div>
+{% endif %}

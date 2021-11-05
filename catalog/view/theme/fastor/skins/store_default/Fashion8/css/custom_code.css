@@ -1,0 +1,6 @@
+ #slider .pattern { -webkit-box-shadow: inset 0px 1px 0px 0px #dadada;;
+-moz-box-shadow: inset 0px 1px 0px 0px #dadada;;
+box-shadow: inset 0px 1px 0px 0px #dadada; }
+.cart-block-type-8 #top #cart_block .cart-heading p { border-color: #d9d9d9 !important;height: 45px;padding-top: 13px; }
+.cart-block-type-8 #top #cart_block .cart-heading { border: none !important; }
+.cart-block-type-8 #top #cart_block .cart-heading .cart-icon { padding-top: 13px; }

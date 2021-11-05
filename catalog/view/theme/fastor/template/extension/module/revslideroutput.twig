@@ -1,0 +1,14 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set config = registry.get('config') %} 
+	<link rel="stylesheet" type="text/css" href="catalog/view/theme/fastor/css/slider.css" property='stylesheet' />
+
+	<script type="text/javascript" src="system/config/revslider/public/assets/js/jquery.themepunch.tools.min.js"></script>
+	<script type="text/javascript" src="system/config/revslider/public/assets/js/jquery.themepunch.revolution.min.js"></script>
+	{{ rev_content }} 
+
+	{% if (slider_align_top == 1) %} 
+	<script type="text/javascript">
+	     $('body').addClass('slider-align-top');
+	</script>
+	{% endif %}
+{% endif %}

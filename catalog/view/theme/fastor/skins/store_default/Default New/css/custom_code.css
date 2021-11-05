@@ -1,0 +1,3 @@
+.header-notice a.close-notice { width: 61px;height: 61px;border-radius: 0px;-webkit-border-radius: 0px;-moz-border-radius: 0px;margin: 0px;background: rgba(0, 0, 0, 0.5);color: #fff;padding: 0px;text-align: center; }
+.header-notice a.close-notice:hover { background: rgba(0, 0, 0, 0.7); }
+.header-notice a.close-notice:before { font-size: 20px;line-height: 61px; }

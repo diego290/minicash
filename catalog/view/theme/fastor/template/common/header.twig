@@ -1,0 +1,508 @@
+{% if (registry.has('theme_options') == constant('false')) %} 
+  <style>
+    body {
+      display: none !important;
+    }
+  </style>
+  <script>
+    window.location = 'themeinstall/index.php';
+  </script>
+{% else %}
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %}
+	{% set request = registry.get('request') %}
+	{% set page_direction = theme_options.get( 'page_direction' ) %} 
+	{% set language_id = config.get( 'config_language_id' ) %} 
+
+	{% if (request.get['route'] is defined) %}
+		{% if (request.get['product_id'] is defined) %}
+			{% set class = '-' ~ request.get['product_id'] %}
+		{% elseif (request.get['path'] is defined) %}
+			{% set class = '-' ~ request.get['path'] %}
+		{% elseif (request.get['manufacturer_id'] is defined) %}
+			{% set class = '-' ~ request.get['manufacturer_id'] %}
+		{% elseif (request.get['information_id'] is defined) %}
+			{% set class = '-' ~ request.get['information_id'] %}
+		{% else %} 
+			{% set class = '' %}
+		{% endif %}
+
+		{% set klasa = request.get['route']|replace({ '/': "-" }) ~ class %}
+	{% else %} 
+		{% set klasa = 'common-home' %}
+	{% endif %} 
+	<!DOCTYPE html>
+	<!--[if IE 7]> <html lang="{{ lang }}" class="ie7 {% if (theme_options.get( 'responsive_design' ) == '0') %} {{ 'no-' }} {% endif %}responsive{{ page_direction[language_id] == 'RTL' ? ' rtl' : '' }}" {{ page_direction[language_id] == 'RTL' ? 'dir="rtl"' : '' }}> <![endif]-->  
+	<!--[if IE 8]> <html lang="{{ lang }}" class="ie8 {% if (theme_options.get( 'responsive_design' ) == '0') %} {{ 'no-' }} {% endif %}responsive{{ page_direction[language_id] == 'RTL' ? ' rtl' : '' }}" {{ page_direction[language_id] == 'RTL' ? 'dir="rtl"' : '' }}> <![endif]-->  
+	<!--[if IE 9]> <html lang="{{ lang }}" class="ie9 {% if (theme_options.get( 'responsive_design' ) == '0') %} {{ 'no-' }} {% endif %}responsive{{ page_direction[language_id] == 'RTL' ? ' rtl' : '' }}" {{ page_direction[language_id] == 'RTL' ? 'dir="rtl"' : '' }}> <![endif]-->  
+	<!--[if !IE]><!--> <html lang="{{ lang }}" class="{% if (theme_options.get( 'responsive_design' ) == '0') %} {{ 'no-' }} {% endif %}responsive{{ page_direction[language_id] == 'RTL' ? ' rtl' : '' }}" {{ page_direction[language_id] == 'RTL' ? 'dir="rtl"' : '' }}> <!--<![endif]-->  
+	<head>
+		<title>{{ title }}</title>
+		<base href="{{ base }}" />
+
+		<!-- Meta -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		{% if (theme_options.get( 'responsive_design' ) != '0') %} 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		{% endif %} 
+		{% if (description) %} 
+		<meta name="description" content="{{ description|striptags }}" />
+		{% endif %} 
+		{% if (keywords) %} 
+		<meta name="keywords" content="{{ keywords|striptags }}" />
+		{% endif %} 
+		
+		{% for link in links %} 
+		<link href="{{ link['href'] }}" rel="{{ link['rel'] }}" />
+		{% endfor %} 
+		
+		<!-- Google Fonts -->
+		<link href="//fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet" type="text/css">
+		
+
+
+		
+	 	{% if ( theme_options.get( 'font_status' ) == '1' ) %}
+			{% set lista_fontow = [] %}
+	 		{% if ( theme_options.get( 'body_font' ) != '' and theme_options.get( 'body_font' ) != 'standard' and theme_options.get( 'body_font' ) != 'Arial' and theme_options.get( 'body_font' ) != 'Georgia' and theme_options.get( 'body_font' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'body_font' ) %}
+				{% set lista_fontow = lista_fontow|merge([font]) %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'categories_bar' ) != '' and theme_options.get( 'categories_bar' ) != 'standard' and theme_options.get( 'categories_bar' ) != 'Arial' and theme_options.get( 'categories_bar' ) != 'Georgia' and theme_options.get( 'categories_bar' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'categories_bar' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'categories_submenu_heading' ) != '' and theme_options.get( 'categories_submenu_heading' ) != 'standard' and theme_options.get( 'categories_submenu_heading' ) != 'Arial' and theme_options.get( 'categories_submenu_heading' ) != 'Georgia' and theme_options.get( 'categories_submenu_heading' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'categories_submenu_heading' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'categories_box_heading' ) != '' and theme_options.get( 'categories_box_heading' ) != 'standard' and theme_options.get( 'categories_box_heading' ) != 'Arial' and theme_options.get( 'categories_box_heading' ) != 'Georgia' and theme_options.get( 'categories_box_heading' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'categories_box_heading' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'categories_box_links' ) != '' and theme_options.get( 'categories_box_links' ) != 'standard' and theme_options.get( 'categories_box_links' ) != 'Arial' and theme_options.get( 'categories_box_links' ) != 'Georgia' and theme_options.get( 'categories_box_links' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'categories_box_links' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'headlines' ) != '' and theme_options.get( 'headlines' ) != 'standard' and theme_options.get( 'headlines' ) != 'Arial' and theme_options.get( 'headlines' ) != 'Georgia' and theme_options.get( 'headlines' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'headlines' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'footer_headlines' ) != '' and theme_options.get( 'footer_headlines' ) != 'standard' and theme_options.get( 'footer_headlines' ) != 'Arial' and theme_options.get( 'footer_headlines' ) != 'Georgia' and theme_options.get( 'footer_headlines' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'footer_headlines' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'page_name' ) != '' and theme_options.get( 'page_name' ) != 'standard' and theme_options.get( 'page_name' ) != 'Arial' and theme_options.get( 'page_name' ) != 'Georgia' and theme_options.get( 'page_name' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'page_name' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'button_font' ) != '' and theme_options.get( 'button_font' ) != 'standard' and theme_options.get( 'button_font' ) != 'Arial' and theme_options.get( 'button_font' ) != 'Georgia' and theme_options.get( 'button_font' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'button_font' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'custom_price' ) != '' and theme_options.get( 'custom_price' ) != 'standard' and theme_options.get( 'custom_price' ) != 'Arial' and theme_options.get( 'custom_price' ) != 'Georgia' and theme_options.get( 'custom_price' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'custom_price' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% if ( theme_options.get( 'sale_new_font' ) != '' and theme_options.get( 'sale_new_font' ) != 'standard' and theme_options.get( 'sale_new_font' ) != 'Arial' and theme_options.get( 'sale_new_font' ) != 'Georgia' and theme_options.get( 'sale_new_font' ) != 'Times New Roman' ) %}
+				{% set font = theme_options.get( 'sale_new_font' ) %}
+				{% if (font not in lista_fontow) %}
+					{% set lista_fontow = lista_fontow|merge([font]) %}
+				{% endif %}
+			{% endif %}
+			
+			{% for font in lista_fontow %} 
+				{{ '<link href="//fonts.googleapis.com/css?family=' ~ font|url_encode ~ ':800,700,600,500,400,300,200,100" rel="stylesheet" type="text/css">' }}
+			{% endfor %}
+		{% endif %}
+		
+		
+		{% set lista_plikow = [
+				'catalog/view/theme/fastor/css/bootstrap.css',
+				'catalog/view/theme/fastor/css/animate.css',
+				'catalog/view/theme/fastor/css/stylesheet.css',
+				'catalog/view/theme/fastor/css/responsive.css',
+				'catalog/view/theme/fastor/css/menu.css',
+				'catalog/view/theme/fastor/css/owl.carousel.css',
+				'catalog/view/theme/fastor/css/font-awesome.min.css'
+		] %} 
+		
+		{# RTL #}
+		
+		{% if (page_direction[language_id] == 'RTL') %}
+		 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/rtl.css']) %}
+		 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/bootstrap_rtl.css']) %}
+		{% endif %}
+		
+		{# Full screen background slider #}
+		{% if (config.get( 'full_screen_background_slider_module' ) != '') %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/jquery.vegas.css']) %}{% endif %}
+		
+		{# Category wall #}
+		{% if (config.get( 'category_wall_module' ) != '') %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/category_wall.css']) %}{% endif %}
+		
+		{# Filter product #}
+		{% if (config.get( 'filter_product_module' ) != '') %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/filter_product.css']) %}{% endif %}
+		
+		{# Wide width		 #}
+		{% if (theme_options.get( 'page_width' ) == 1) %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/wide-grid.css']) %}{% endif %} 
+		
+		{# Normal width #}
+		{% if (theme_options.get( 'page_width' ) == 3) %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/standard-grid.css']) %}{% endif %}
+		
+		{# Spacing 20px #}
+		{% if (theme_options.get( 'spacing_between_columns' ) == 2) %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/css/spacing_20.css']) %}{% endif %}
+
+		{{ theme_options.compressorCodeCss( 'fastor', lista_plikow, theme_options.get( 'compressor_code_status' ), constant('HTTP_SERVER') ) }}
+		
+		{# Custom colors, fonts and backgrounds #}
+		{% include 'fastor/css/custom_colors.twig' %}
+		
+		{% if (theme_options.get( 'custom_code_css_status' ) == 1) %} 
+		<link rel="stylesheet" href="catalog/view/theme/fastor/skins/store_{{ theme_options.get( 'store' ) }}/{{ theme_options.get( 'skin' ) }}/css/custom_code.css">
+		{% endif %} 
+		
+		{% for style in styles %} 
+			{% if ("mf/jquery-ui.min.css" in style['href']) %} 
+				<link rel="{{ style['rel'] }}" type="text/css" href="catalog/view/theme/fastor/css/jquery-ui.min.css" media="{{ style['media'] }}" />
+			{% elseif ("mf/style.css" in style['href']) %} 
+				<link rel="{{ style['rel'] }}" type="text/css" href="catalog/view/theme/fastor/css/mega_filter.css" media="{{ style['media'] }}" />
+			{% elseif ("blog-news" in style['href']) %} 
+				<link rel="{{ style['rel'] }}" type="text/css" href="catalog/view/theme/fastor/css/blog.css" media="{{ style['media'] }}" />
+			{% elseif (style['href'] != 'catalog/view/javascript/jquery/owl-carousel/owl.carousel.css') %} 
+				<link rel="{{ style['rel'] }}" type="text/css" href="{{ style['href'] }}" media="{{ style['media'] }}" />
+			{% endif %} 
+		{% endfor %} 
+
+		<link rel="stylesheet" type="text/css" href="catalog/view/javascript/jquery/magnific/magnific-popup.css" media="screen" />
+		
+		{% if (theme_options.get( 'page_width' ) == 2 and theme_options.get( 'max_width' ) > 900) %} 
+		<style type="text/css">
+			.standard-body .full-width .container {
+				max-width: {{ theme_options.get( 'max_width' ) }}px;
+				{% if (theme_options.get( 'responsive_design' ) == '0') %} 
+				width: {{ theme_options.get( 'max_width' ) }}px;
+				{% endif %} 
+			}
+			
+			.main-fixed,
+			.fixed-body-2-2,
+			.standard-body .fixed2 .background {
+				max-width: {{ theme_options.get( 'max_width' ) }}px;
+				{% if (theme_options.get( 'responsive_design' ) == '0') %} 
+				width: {{ theme_options.get( 'max_width' ) }}px;
+				{% endif %} 
+			}
+			
+			.standard-body .fixed .background {
+			     max-width: {{ theme_options.get( 'max_width' )-90 }}px;
+			     {% if (theme_options.get( 'responsive_design' ) == '0') %} 
+			     width: {{ theme_options.get( 'max_width' )-90 }}px;
+			     {% endif %} 
+			}
+		</style>
+		{% endif %}
+		  
+	    {% set lista_plikow = [] %} 
+	 
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/jquery-2.1.1.min.js']) %}
+	 {% if (theme_options.file_exists('catalog/view/javascript/mf/jquery-ui.min.js')) %}{% set lista_plikow = lista_plikow|merge(['catalog/view/javascript/mf/jquery-ui.min.js']) %}{% endif %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/jquery-migrate-1.2.1.min.js']) %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/jquery.easing.1.3.js']) %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/bootstrap.min.js']) %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/twitter-bootstrap-hover-dropdown.js']) %}
+	 {% if (theme_options.get( 'lazy_loading_images' ) != '0') %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/echo.min.js']) %}{% endif %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/common.js']) %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/tweetfeed.min.js']) %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/bootstrap-notify.min.js']) %}
+	 
+	 {# Specials countdown #}
+	 {% if (theme_options.get( 'display_specials_countdown' ) == '1') %}
+	 {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/jquery.plugin.min.js']) %}
+	 {% set countdown = theme_options.get( 'jquery_countdown_translate' ) %}
+	 {% set language_id = config.get( 'config_language_id' ) %}
+	 {% if (countdown[language_id] is defined) %}
+	 	{% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/countdown/' ~ countdown[language_id]]) %}
+	 {% else %} 
+	 	{% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/countdown/jquery.countdown.min.js']) %}
+	 {% endif %}
+	 {% endif %}
+	 
+	 {# Banner module #}
+	 {% if (config.get( 'banner_module' ) != '') %} {% set lista_plikow = lista_plikow|merge(['catalog/view/theme/fastor/js/jquery.cycle2.min.js']) %}{% endif %}
+	 
+	 {{ theme_options.compressorCodeJs( 'fastor', lista_plikow, theme_options.get( 'compressor_code_status' ), constant('HTTPS_SERVER') ) }}
+	    
+	    {# Full screen background slider #}
+		{% if (config.get( 'full_screen_background_slider_module' ) != '') %} 
+	        <script type="text/javascript" src="catalog/view/theme/fastor/js/jquery.vegas.min.js"></script>
+	    {% endif %} 
+	    
+	    <script type="text/javascript" src="catalog/view/theme/fastor/js/owl.carousel.min.js"></script>
+	    
+	    {% if (theme_options.get( 'quick_search_autosuggest' ) != '0' and klasa != 'account-tracking') %} 
+	    	<script type="text/javascript" src="catalog/view/theme/fastor/js/jquery-ui-1.10.4.custom.min.js"></script>
+	    {% endif %} 
+	    
+	    <script type="text/javascript" src="catalog/view/javascript/jquery/magnific/jquery.magnific-popup.min.js"></script>
+		
+		<!-- Mascara nos campos CPF CNPJ DATA -->
+		<script type="text/javascript" src="catalog/view/javascript/jquery/jquery.mask.min.js"></script>
+		<!-- Mascara nos campos CPF CNPJ DATA -->
+		
+		<script type="text/javascript">
+			var responsive_design = '{% if (theme_options.get( 'responsive_design' ) == '0') %}{{ 'no' }}{% else %}{{ 'yes' }}{% endif %}';
+		</script>
+		
+		{% for script in scripts %} 
+			{% if (script != 'catalog/view/javascript/jquery/owl-carousel/owl.carousel.min.js') %} 
+				<script type="text/javascript" src="{{ script }}"></script>
+			{% endif %} 
+			{% if "mega_filter.js" in script %} 
+				<script type="text/javascript">
+					function display_MFP(view) {
+					     {% if (theme_options.get( 'quick_view' ) == 1) %} 
+					     $('.quickview a').magnificPopup({
+					          preloader: true,
+					          tLoading: '',
+					          type: 'iframe',
+					          mainClass: 'quickview',
+					          removalDelay: 200,
+					          gallery: {
+					           enabled: true
+					          }
+					     });
+					     {% endif %} 
+					}
+				</script>
+			{% endif %} 
+		{% endfor %} 
+		
+		{% if (theme_options.get( 'custom_code_javascript_status' ) == 1) %} 
+			<script type="text/javascript" src="catalog/view/theme/fastor/skins/store_{{ theme_options.get( 'store' ) }}/{{ theme_options.get( 'skin' ) }}/js/custom_code.js"></script>
+		{% endif %} 
+		
+		{% for analytic in analytics %} 
+		{{ analytic }} 
+		{% endfor %}  
+		<!--[if lt IE 9]>
+			<script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+			<script src="catalog/view/theme/fastor/js/respond.min.js"></script>
+		<![endif]-->
+		
+	</head>	
+	<body class="{{ klasa }} {% if (theme_options.get( 'page_width' ) == 2 and theme_options.get( 'max_width' ) > 1400) %} {{ 'body-full-width' }} {% endif %} {% if (theme_options.get( 'product_list_type' ) > 0) %} {{ 'product-list-type-' ~ theme_options.get( 'product_list_type' ) }} {% endif %} {% if (theme_options.get( 'product_grid_type' ) > 0) %} {{ 'product-grid-type-' ~ theme_options.get( 'product_grid_type' ) }} {% endif %} {% if (theme_options.get( 'dropdown_menu_type' ) > 0) %} {{ 'dropdown-menu-type-' ~ theme_options.get( 'dropdown_menu_type' ) }} {% endif %} {% if (theme_options.get( 'products_buttons_action' ) > 0) %} {{ 'products-buttons-action-type-' ~ theme_options.get( 'products_buttons_action' ) }} {% endif %} {% if (theme_options.get( 'buttons_prev_next_in_slider' ) > 0) %} {{ 'buttons-prev-next-type-' ~ theme_options.get( 'buttons_prev_next_in_slider' ) }} {% endif %} {% if (theme_options.get( 'inputs_type' ) > 0) %} {{ 'inputs-type-' ~ theme_options.get( 'inputs_type' ) }} {% endif %} {% if (theme_options.get( 'cart_block_type' ) > 0) %} {{ 'cart-block-type-' ~ theme_options.get( 'cart_block_type' ) }} {% endif %} {% if (theme_options.get( 'my_account_type' ) > 0) %} {{ 'my-account-type-' ~ theme_options.get( 'my_account_type' ) }} {% endif %} {% if (theme_options.get( 'top_bar_type' ) > 0) %} {{ 'top-bar-type-' ~ theme_options.get( 'top_bar_type' ) }} {% endif %} {% if (theme_options.get( 'show_vertical_menu_category_page' ) > 0) %} {{ 'show-vertical-megamenu-category-page' }} {% endif %} {% if (theme_options.get( 'show_vertical_menu_product_page' ) > 0) %} {{ 'show-vertical-megamenu-product-page' }} {% endif %} {% if (theme_options.get( 'show_vertical_menu' ) > 0) %} {{ 'show-vertical-megamenu' }} {% endif %} {% if (theme_options.get( 'product_page_type' ) > 0) %} {{ 'product-page-type-' ~ theme_options.get( 'product_page_type' ) }} {% endif %} {% if (theme_options.get( 'megamenu_type' ) > 0) %} {{ 'megamenu-type-' ~ theme_options.get( 'megamenu_type' ) }} {% endif %} {% if (theme_options.get( 'search_type_in_header' ) > 0) %} {{ 'search-type-' ~ theme_options.get( 'search_type_in_header' ) }} {% endif %} {% if (theme_options.get( 'megamenu_label_type' ) > 0) %} {{ 'megamenu-label-type-' ~ theme_options.get( 'megamenu_label_type' ) }} {% endif %} {% if (theme_options.get( 'box_type' ) == 7) %} {{ 'box-type-4' }} {% else %} {{ 'no-box-type-7' }} {% endif %} {% if (theme_options.get( 'box_type' ) > 0) %} {{ 'box-type-' ~ theme_options.get( 'box_type' ) }} {% endif %} {% if (theme_options.get( 'header_margin_top' ) > 0) %} {{ 'header-margin-top-' ~ theme_options.get( 'header_margin_top' ) }} {% endif %} {% if (theme_options.get( 'sale_new_type' ) > 0) %} {{ 'sale-new-type-' ~ theme_options.get( 'sale_new_type' ) }} {% endif %} {% if (theme_options.get( 'button_type' ) > 0) %} {{ 'button-body-type-' ~ theme_options.get( 'button_type' ) }} {% endif %} {% if (theme_options.get( 'countdown_special' ) > 0) %} {{ 'countdown-special-type-' ~ theme_options.get( 'countdown_special' ) }} {% endif %} {% if (theme_options.get( 'footer_type' ) > 0) %} {{ 'footer-type-' ~ theme_options.get( 'footer_type' ) }} {% endif %} {% if (theme_options.get( 'breadcrumb_style' ) > 0) %} {{ 'breadcrumb-style-' ~ theme_options.get( 'breadcrumb_style' ) }} {% endif %} {% if (theme_options.get( 'border_width' ) == '1') %} {{ 'border-width-1' }} {% else %} {{ 'border-width-0' }} {% endif %} {% if ((theme_options.get( 'body_background_color' ) == '#ffffff' or (theme_options.get( 'main_content_background_color' ) == theme_options.get( 'body_background_color' ) and theme_options.get( 'body_background_color' ) != '') or theme_options.get( 'main_content_background_color' ) == 'none') and theme_options.get( 'colors_status' ) == '1') %} {{ 'body-white' }} {% else %} {{ 'body-other' }} {% endif %} {% if (theme_options.get( 'main_content_background_color' ) == 'none' and theme_options.get( 'colors_status' ) == '1') %} {{ 'body-white-type-2' }} {% endif %} {% if (theme_options.get( 'main_content_background_color' ) == 'none' and theme_options.get( 'box_with_products_background_color' ) == '#ffffff' and theme_options.get( 'colors_status' ) == '1') %} {{ 'body-white-type-3' }} {% endif %} {% if (theme_options.get( 'hover_effect' ) == '1') %} {{ 'banners-effect-' ~ theme_options.get( 'hover_effect_type' ) }} {% endif %} body-header-type-{{ theme_options.get( 'header_type' ) }}">
+	{% if (theme_options.get( 'widget_facebook_status' ) == 1) %} 
+	<div class="facebook_{% if (theme_options.get( 'widget_facebook_position' ) == 1) %} {{ 'left' }} {% else %} {{ 'right' }} {% endif %} hidden-xs hidden-sm">
+		<div class="facebook-icon"></div>
+		<div class="facebook-content">
+			<script>(function(d, s, id) {
+			  var js, fjs = d.getElementsByTagName(s)[0];
+			  if (d.getElementById(id)) return;
+			  js = d.createElement(s); js.id = id;
+			  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+			  fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));</script>
+			
+			<div class="fb-like-box fb_iframe_widget" profile_id="{{ theme_options.get( 'widget_facebook_id' ) }}" data-colorscheme="light" data-height="370" data-connections="16" fb-xfbml-state="rendered"></div>
+		</div>
+		
+		<script type="text/javascript">    
+		$(function() {  
+			$(".facebook_right").hover(function() {            
+				$(".facebook_right").stop(true, false).animate({right: "0"}, 800, 'easeOutQuint');        
+			}, function() {            
+				$(".facebook_right").stop(true, false).animate({right: "-308"}, 800, 'easeInQuint');        
+			}, 1000);    
+		
+			$(".facebook_left").hover(function() {            
+				$(".facebook_left").stop(true, false).animate({left: "0"}, 800, 'easeOutQuint');        
+			}, function() {            
+				$(".facebook_left").stop(true, false).animate({left: "-308"}, 800, 'easeInQuint');        
+			}, 1000);    
+		});  
+		</script>
+	</div>
+	{% endif %} 
+
+	{% if (theme_options.get( 'widget_twitter_status' ) == 1) %} 
+	<div class="twitter_{% if (theme_options.get( 'widget_twitter_position' ) == 1) %} {{ 'left' }} {% else %} {{ 'right' }} {% endif %} hidden-xs hidden-sm">
+		<div class="twitter-icon"></div>
+		<div class="twitter-content">
+			<a class="twitter-timeline" href="https://twitter.com/{{ theme_options.get( 'widget_twitter_user_name' ) }}" data-tweet-limit="{{ theme_options.get( 'widget_twitter_limit' ) }}">Tweets by {{ theme_options.get( 'widget_twitter_user_name' ) }}</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+		</div>
+		
+		<script type="text/javascript">    
+		$(function() {  
+			$(".twitter_right").hover(function() {            
+				$(".twitter_right").stop(true, false).animate({right: "0"}, 800, 'easeOutQuint');        
+			}, function() {            
+				$(".twitter_right").stop(true, false).animate({right: "-308"}, 800, 'easeInQuint');        
+			}, 1000);    
+		
+			$(".twitter_left").hover(function() {            
+				$(".twitter_left").stop(true, false).animate({left: "0"}, 800, 'easeOutQuint');        
+			}, function() {            
+				$(".twitter_left").stop(true, false).animate({left: "-308"}, 800, 'easeInQuint');        
+			}, 1000);    
+		});  
+		</script>
+	</div>
+	{% endif %}
+
+	{% if (theme_options.get( 'widget_custom_status' ) == 1) %} 
+	<div class="custom_{% if (theme_options.get( 'widget_custom_position' ) == 1) %} {{ 'left' }} {% else %} {{ 'right' }} {% endif %} hidden-xs hidden-sm">
+		<div class="custom-icon"></div>
+		<div class="custom-content">
+			{% set lang_id = config.get( 'config_language_id' ) %} 
+			{% set custom_content = theme_options.get( 'widget_custom_content' ) %} 
+			{% if (custom_content[lang_id] is defined) %} {{ custom_content[lang_id]|raw }}{% endif %} 
+		</div>
+		
+		<script type="text/javascript">    
+		$(function() {  
+			$(".custom_right").hover(function() {            
+				$(".custom_right").stop(true, false).animate({right: "0"}, 800, 'easeOutQuint');        
+			}, function() {            
+				$(".custom_right").stop(true, false).animate({right: "-308"}, 800, 'easeInQuint');        
+			}, 1000);    
+		
+			$(".custom_left").hover(function() {            
+				$(".custom_left").stop(true, false).animate({left: "0"}, 800, 'easeOutQuint');        
+			}, function() {            
+				$(".custom_left").stop(true, false).animate({left: "-308"}, 800, 'easeInQuint');        
+			}, 1000);    
+		});  
+		</script>
+		
+	</div>
+	{% endif %} 
+
+	{% if (theme_options.get( 'quick_view' ) == 1) %} 
+	<script type="text/javascript">
+	$(window).load(function(){
+	     $('.quickview a').magnificPopup({
+	          preloader: true,
+	          tLoading: '',
+	          type: 'iframe',
+	          mainClass: 'quickview',
+	          removalDelay: 200,
+	          gallery: {
+	           enabled: true
+	          }
+	     });
+	});
+	</script>
+	{% endif %} 
+
+	{% set popup = theme_options.getModules('popup') %}
+	{% if ( popup|length > 0 ) %} 
+		{% for module in popup %} 
+			{{ module }}
+		{% endfor %}
+	{% endif %} 
+
+
+	{% set header_notice = theme_options.getModules('header_notice') %}
+	{% if ( header_notice|length > 0 ) %} 
+		{% for module in header_notice %} 
+			{{ module }}
+		{% endfor %}
+	{% endif %}
+
+
+	{% set cookie = theme_options.getModules('cookie') %}
+	{% if ( cookie|length > 0 ) %} 
+		{% for module in cookie %} 
+			{{ module }}
+		{% endfor %}
+	{% endif %} 
+
+
+	 <div class="{% if (theme_options.get( 'main_layout' ) == 1 or theme_options.get( 'main_layout' ) == 5) %} {{ 'standard-body' }} {% else %} {{ 'fixed-body' }} {% endif %} {% if (theme_options.get( 'main_layout' ) == 7) %} {{ ' fixed-body-shoes' }} {% endif %} {% if (theme_options.get( 'main_layout' ) == 4 or theme_options.get( 'main_layout' ) == 6) %} {{ ' fixed-body-2' }} {% endif %} {% if (theme_options.get( 'main_layout' ) == 5) %} {{ ' fixed-body-2-2' }} {% endif %} {% if (theme_options.get( 'main_layout' ) == 3) %} {{ ' with-shadow' }} {% endif %}">
+		<div id="main" class="{% if (theme_options.get( 'main_layout' ) == 4) %} {{ 'main-fixed2 main-fixed' }} {% elseif (theme_options.get( 'main_layout' ) == 6) %} {{ 'main-fixed2 main-fixed3 main-fixed' }} {% elseif (theme_options.get( 'main_layout' ) != 1 and theme_options.get( 'main_layout' ) != 5) %} {{ 'main-fixed' }} {% endif %}">
+
+			{% if (theme_options.get( 'header_type' ) == 2) %}
+				{% include 'fastor/template/common/header/header_02.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 3) %}
+				{% include 'fastor/template/common/header/header_03.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 4) %}
+				{% include 'fastor/template/common/header/header_04.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 5) %}
+				{% include 'fastor/template/common/header/header_05.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 6) %}
+				{% include 'fastor/template/common/header/header_06.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 7) %}
+				{% include 'fastor/template/common/header/header_07.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 8) %}
+				{% include 'fastor/template/common/header/header_08.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 9) %}
+				{% include 'fastor/template/common/header/header_09.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 10) %}
+				{% include 'fastor/template/common/header/header_10.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 11) %}
+				{% include 'fastor/template/common/header/header_11.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 12) %}
+				{% include 'fastor/template/common/header/header_12.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 13) %}
+				{% include 'fastor/template/common/header/header_13.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 14) %}
+				{% include 'fastor/template/common/header/header_14.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 15) %}
+				{% include 'fastor/template/common/header/header_15.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 16) %}
+				{% include 'fastor/template/common/header/header_16.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 17) %}
+				{% include 'fastor/template/common/header/header_17.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 18) %}
+				{% include 'fastor/template/common/header/header_18.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 19) %}
+				{% include 'fastor/template/common/header/header_19.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 20) %}
+				{% include 'fastor/template/common/header/header_20.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 21) %}
+				{% include 'fastor/template/common/header/header_21.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 22) %}
+				{% include 'fastor/template/common/header/header_22.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 23) %}
+				{% include 'fastor/template/common/header/header_23.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 24) %}
+				{% include 'fastor/template/common/header/header_24.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 25) %}
+				{% include 'fastor/template/common/header/header_25.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 26) %}
+				{% include 'fastor/template/common/header/header_26.twig' %}
+			{% elseif (theme_options.get( 'header_type' ) == 27) %}
+				{% include 'fastor/template/common/header/header_27.twig' %}
+			{% else %} 
+				{% include 'fastor/template/common/header/header_01.twig' %}
+			{% endif %} 
+{% endif %}

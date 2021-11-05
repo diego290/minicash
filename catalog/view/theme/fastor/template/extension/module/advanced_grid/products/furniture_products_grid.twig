@@ -1,0 +1,96 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+	{% set class = 3 %} 
+	{% set all = 4 %}
+	{% set id = random(50000)*random(500000) %}
+
+	{% set theme_options = registry.get('theme_options') %}
+	{% set config = registry.get('config') %}
+
+	{% if (module['content']['products']|length == 6) %} {% set class = 2 %} {% set all = 6 %} {% endif %}
+	{% if (module['content']['products']|length == 5) %} {% set class = 25 %} {% set all = 5 %} {% endif %}
+	{% if (module['content']['products']|length == 3) %} {% set class = 4 %} {% set all = 3 %} {% endif %}
+	{% if (module['content']['products']|length == 2) %} {% set class = 6 %} {% set all = 2 %} {% endif %}
+	{% if (module['content']['products']|length == 1) %} {% set class = 12 %} {% set all = 1 %} {% endif %} 
+
+	<div class="box clearfix box-with-products furniture-box">
+	  <div class="box-heading">{{ module['content']['title'] }}</div>
+	  <div class="strip-line"></div>
+	  <div class="clear"></div>
+	  <div class="box-content products">
+	    <div class="box-product">
+	    	<div id="myCarousel{{ id }}">
+	    		<!-- Carousel items -->
+	    		<div class="carousel-inner">
+	    			{% set i = 0 %} {% set row_fluid = 0 %} {% set item = 0 %} {% for product in module['content']['products'] %} {% set row_fluid = row_fluid + 1 %} 
+		    			{% if (i == 0) %} {% set item = item + 1 %} {{ '<div class="active item"><div class="product-grid"><div class="row">' }} {% endif %} 
+		    			{% set r=row_fluid-(row_fluid/all)|round(0, 'floor')*all %} {% if (row_fluid>all and r == 1) %} {{ '</div><div class="row">' }} {% endif %} 
+		    			<div class="col-sm-{{ class }} {% if (class != 12) %}col-xs-6{% endif %} {% if (class == 2) %} {{ 'col-md-25 col-lg-2 col-sm-3 ' }} {% endif %} {% if (class == 2 and r == 0) %} {{ 'hidden-md hidden-sm' }} {% endif %} {% if (class == 2 and r == 5) %} {{ 'hidden-sm' }} {% endif %} {% if (class == 25) %} {{ 'col-md-25 col-lg-25 col-sm-3 ' }} {% endif %} {% if (class == 25 and r == 0) %} {{ 'hidden-sm' }} {% endif %}">
+		    				<!-- Product -->
+		    				<div class="product clearfix">
+		    					<div class="left">
+		    						{% if (product['thumb']) %} 
+		    							{% if (product['special'] and theme_options.get( 'display_text_sale' ) != '0') %} 
+		    								{% set text_sale = 'Sale' %}
+		 								{% if (theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) != '') %}
+		 									{% set text_sale = theme_options.get( 'sale_text', config.get( 'config_language_id' ) ) %}
+		 								{% endif %} 
+		    								{% if (theme_options.get( 'type_sale' ) == '1') %} 
+		    									{% set product_detail = theme_options.getDataProduct( product['product_id'] ) %}
+		 									{% set roznica_ceny = product_detail['price']-product_detail['special'] %}
+		 									{% set procent = roznica_ceny*100/product_detail['price'] %} 
+		    									<div class="sale">-{{ procent|round }}%</div>
+		    								{% else %} 
+		    									<div class="sale">{{ text_sale }}</div>
+		    								{% endif %} 
+		    							 {% elseif (theme_options.get( 'display_text_new' ) != '0' and theme_options.isLatestProduct( product['product_id'] )) %} 
+		    								 <div class="new">{% if (theme_options.get( 'new_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.get( 'new_text', config.get( 'config_language_id' ) ) }} {% else %} {{ 'New' }} {% endif %}</div>
+		    							 {% endif %} 
+		    							
+		    							<div class="image {% if (theme_options.get( 'product_image_effect' ) == '1') %} {{ 'image-swap-effect' }} {% endif %}">
+		    								<a href="{{ product['href'] }}">
+			    								{% if (theme_options.get( 'product_image_effect' ) == '1') %}
+	                                                  {% set nthumb = product['thumb']|replace({' ': "%20"}) %}
+	                                                  {% set adres = constant('HTTP_SERVER') %}
+	                                                  {% set nthumb = nthumb|replace({adres: ""}) %}
+	                                                  {% set image_size = theme_options.getimagesize(nthumb) %}
+			 										{% set image_swap = theme_options.productImageSwap(product['product_id'], image_size[0], image_size[1]) %}
+			 										{% if (image_swap != '') %} {{ '<img src="' ~ image_swap ~ '" alt="' ~ product['name'] ~ '" class="swap-image" />' }}{% endif %}
+			 									{% endif %} 
+		    									{% if (theme_options.get( 'lazy_loading_images' ) != '0') %} 
+		    									<img src="image/catalog/blank.gif" data-echo="{{ product['thumb'] }}" alt="{{ product['name'] }}" class="{% if (theme_options.get( 'product_image_effect' ) == '2') %} {{ 'zoom-image-effect' }} {% endif %}" />
+		    									{% else %} 
+		    									<img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" class="{% if (theme_options.get( 'product_image_effect' ) == '2') %} {{ 'zoom-image-effect' }} {% endif %}" />
+		    									{% endif %} 
+		    								</a>
+		    							</div>
+		    						{% else %} 
+		    							<div class="image">
+		    								<a href="{{ product['href'] }}"><img src="image/no_image.jpg" alt="{{ product['name'] }}" {% if (theme_options.get( 'product_image_effect' ) == '2') %} {{ 'class="zoom-image-effect"' }} {% endif %} /></a>
+		    							</div>
+		    						{% endif %} 
+		    					</div>
+		    					<div class="right">
+		    						<div class="name"><a href="{{ product['href'] }}">{{ product['name'] }}</a></div>
+		    						<div class="price">
+		    							{% if (not product['special']) %} 
+		    							{{ product['price'] }} 
+		    							{% else %} 
+		    							<span class="price-old">{{ product['price'] }}</span> <span class="price-new">{{ product['special'] }}</span>
+		    							{% endif %} 
+		    						</div>
+		    						{% if (theme_options.get( 'display_add_to_cart' ) != '0') %} 
+		    						<div class="add-to-cart">
+		    						     <a onclick="cart.add('{{ product['product_id'] }}');">{{ button_cart }}</a>
+		    						</div>
+		    						{% endif %} 
+		    					</div>
+		    				</div>
+		    			</div>
+	    			{% set i = i + 1 %} {% endfor %} 
+	    			{% if (i > 0) %} {{ '</div></div></div>' }} {% endif %} 
+	    		</div>
+			</div>
+	    </div>
+	  </div>
+	</div>
+{% endif %}

@@ -1,0 +1,48 @@
+{% if (registry.has('theme_options') == constant('true')) %} 
+  {% set theme_options = registry.get('theme_options') %}
+  {% set config = registry.get('config') %}
+  {% set page_direction = theme_options.get( 'page_direction' ) %} {% set language_id = config.get( 'config_language_id' ) %} 
+  <div class="box clearfix box-with-products with-scroll">
+    <!-- Carousel nav -->
+    <a class="next" href="#our_brands" id="brands_next"><span></span></a>
+    <a class="prev" href="#our_brands" id="brands_prev"><span></span></a>
+    
+    <div class="box-heading">{% if (theme_options.get( 'our_brands_text', config.get( 'config_language_id' ) ) != '') %} {{ theme_options.html_entity_decode(theme_options.get( 'our_brands_text', config.get( 'config_language_id' ) )) }} {% else %} {{ 'Our brands' }} {% endif %}</div>
+    <div class="clear"></div>
+    <div class="box-content products">     
+       <div id="our_brands" class="owl-carousel carousel-brands">
+         {% for banner in banners %} 
+         <div class="item text-center">
+           {% if (banner['link']) %} 
+           <a href="{{ banner['link'] }}"><img src="{{ banner['image'] }}" alt="{{ banner['title'] }}" class="img-responsive" /></a>
+           {% else %} 
+           <img src="{{ banner['image'] }}" alt="{{ banner['title'] }}" class="img-responsive" />
+           {% endif %} 
+         </div>
+         {% endfor %} 
+       </div>
+       
+       <script type="text/javascript"><!--
+       
+       var ourbrands = $('#our_brands').owlCarousel({
+        items: 6,
+        autoPlay: 3000,
+        navigation: false,
+        {% if (page_direction[language_id] == 'RTL') %} 
+        direction: 'rtl'
+        {% endif %} 
+       });
+       
+       $("#brands_next").click(function(){
+           ourbrands.trigger('owl.next');
+           return false;
+         });
+         
+       $("#brands_prev").click(function(){
+           ourbrands.trigger('owl.prev');
+           return false;
+       });
+       --></script>
+    </div>
+  </div>
+{% endif %}

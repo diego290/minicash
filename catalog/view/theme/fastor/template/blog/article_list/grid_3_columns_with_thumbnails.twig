@@ -1,0 +1,81 @@
+{% if (articles|length > 0) %}
+     {% set s = 0 %}
+     {% for article in articles %} 
+          {% if (s == 0) %} 
+          <div class="big-news post">
+             <div class="post-content" onclick="window.location.href = '{{ article['href'] }}'">
+                 {% if (article['gallery']|length > 0) %}
+                     {% if (article['article_list_gallery_display'] == 'CLASSIC') %}
+                         <div class="post-media">
+                             {{ article['gallery'][0]['output'] }}
+                         </div>
+                     {% endif %} 
+                     {% if (article['article_list_gallery_display'] == 'SLIDER') %}
+                         <div class="post-media">
+                             <div class="media-slider">
+                             {% for gallery in article['gallery'] %}
+                                 <div class="item">{{ gallery['output'] }}</div>
+                             {% endfor %} 
+                             </div>
+                         </div>
+                     {% endif %} 
+                 {% endif %} 
+                 
+                 <div class="right">
+                      <div class="overflow">
+                           <div class="tags">
+                                {% set s = 0 %}
+                                {% for tag in article['tags'] %} 
+                                     {% if (s < 2) %}<a href="{{ tag['href'] }}">{{ tag['tag'] }}</a>{% endif %} 
+                                {% set s = s + 1 %} 
+                                {% endfor %} 
+                           </div>
+                           
+                           <div class="date-published">{{ theme_options.date('d.m.Y', theme_options.strtotime(article['date_published'])) }}</div>
+                           
+                           <h2 class="post-title">
+                                <a href="{{ article['href'] }}">{{ article['title'] }}</a>
+                           </h2>
+               
+                           <div class="post-description">
+                               {{ article['description']}}
+                           </div>
+                           
+                           <a href="{{ article['href'] }}" class="button-more">{{ button_read_more }}</a>
+                      </div>
+                 </div>
+             </div>       
+          </div>
+          {% endif %} 
+     {% set s = s + 1 %} 
+     {% endfor %} 
+     
+    <div class="news v1 row clearfix">
+        {% for article in articles %}
+        <div class="col-sm-4 col-xs-6">
+            <div class="media">
+                    {% if (article['thumb']) %}
+                    <div  class="thumb-holder">
+                        <img alt="" src="{{ article['thumb'] }}"></a>
+                    </div>
+                    {% endif %} 
+                    
+                    <div class="media-body" onclick="window.location.href = '{{ article['href'] }}'">
+                         <div class="tags">
+                              {% set s = 0 %} 
+                              {% for tag in article['tags'] %} 
+                                   {% if (s < 2) %}<a href="{{ tag['href'] }}">{{ tag['tag'] }}</a>{% endif %} 
+                              {% set s = s + 1 %} 
+                              {% endfor %} 
+                         </div>
+                         
+                         <div class="bottom">
+                             <div class="date-published">{{ theme_options.date('d.m.Y', theme_options.strtotime(article['date_published'])) }}</div>
+                             <h5>{{ article['title'] }}</h5>
+                         </div>
+                    </div>
+            </div>
+        </div>
+        {% endfor %} 
+    </div>
+{% endif %}

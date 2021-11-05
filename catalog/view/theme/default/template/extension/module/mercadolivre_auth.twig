@@ -1,0 +1,16 @@
+{{ header }}
+<style type="text/css">nav, header { display: none !important }center { position: absolute; top: 45%; left: 50%; transform: translate(-50%,-50%); width: 100% }</style>
+<center>
+  <h1>{{ heading_title }}</h1>
+  <p>{{ text_intro}}</p>
+  <br><br><br>
+  {% if text_alert %}
+  <div class="alert alert-{{ class_alert }} alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      {{ text_alert }}
+  </div>
+  {% endif %}
+  <a class="btn btn-{{ class_auth }} btn-lg" href="{{ auth }}">{{ text_auth }} <i class="fa fa-sign-in"></i></a><br>
+  <br>
+  <button class="btn btn-default btn-xs" onclick="window.close()">Finalizar</button>
+</center>

@@ -1,0 +1,96 @@
+{% set theme_options = registry.get('theme_options') %}
+{% set config = registry.get('config') %} 
+
+{% if (position == 'footer_bottom' or position == 'footer' or position == 'footer_top' or position == 'footer_left' or position == 'footer_right' or position == 'customfooter_top' or position == 'customfooter_bottom' or position == 'customfooter') %}
+	{{ '<h4>'~module['content']['title']~'</h4>' }}
+	{{ '<div class="strip-line"></div>' }}
+	
+	{{ '<div class="clearfix default-newsletter" style="clear: both" id="newsletter' ~ id ~'">' }}
+		 {% if (module['content']['text'] != '') %} {{ '<p>' ~ module['content']['text'] ~ '</p>' }}{% endif %}
+		 {{ '<input type="text" class="email" placeholder="' ~ module['content']['input_placeholder'] ~ '" />' }}
+		 {{ '<a class="button subscribe">' ~ module['content']['subscribe_text'] ~ '</a>' }}
+		 {% if (module['content']['unsubscribe_text'] != '') %}
+		 	{{ '<a class="button unsubscribe">' ~ module['content']['unsubscribe_text'] ~ '</a>' }}
+		 {% endif %}
+		 {{ '</div>' }}
+{% else %} 
+	{{ '<div class="box">' }}
+		{{ '<div class="box-heading">' }}
+			{{ module['content']['title'] }}
+		{{ '</div>' }}
+		{{ '<div class="strip-line"></div>' }}
+		{{ '<div class="box-content">' }}
+			 {{ '<div class="clearfix" style="clear: both" id="newsletter' ~ id ~ '">' }}
+			 {% if (module['content']['text'] != '') %} {{ '<p>' ~ module['content']['text'] ~ '</p>' }}{% endif %}
+			 {{ '<input type="text" class="email" placeholder="' ~ module['content']['input_placeholder'] ~ '" style="margin: 5px 5px 5px 0px;height: 33px;vertical-align: top" />' }}
+			 {{ '<a class="button subscribe" style="margin: 5px 0px">' ~ module['content']['subscribe_text'] ~ '</a>' }}
+			 {% if (module['content']['unsubscribe_text'] != '') %}
+			 	{{ '<a class="button unsubscribe" style="margin: 5px 0px 5px 20px">' ~ module['content']['unsubscribe_text'] ~ '</a>' }}
+			 {% endif %}
+			 {{ '</div>' }}
+		{{ '</div>' }}
+	{{ '</div>' }}	
+{% endif %} 
+
+{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+	<div class="newsletter_rodo2">
+		<form id="agree_rodo_form2">
+			<input type="checkbox" name="agree_rodo2" value="1" required="required">&nbsp;{{ theme_options.html_entity_decode(theme_options.get( 'rodo_text', config.get( 'config_language_id' ) )) }} 
+			<input type="submit" class="submit hidden" value="Submit">
+		</form>
+	</div>
+{% endif %} 
+
+<script type="text/javascript">
+$(document).ready(function() {
+	function Unsubscribe() {
+		$.post('{{ module['content']['unsubscribe_url'] }}', 
+			{ 
+				email: $('#newsletter{{ id }} .email').val() 
+			}, function (e) {
+				$('#newsletter{{ id }} .email').val('');
+				alert(e.message);
+			}
+		, 'json');
+	}
+	
+	function Subscribe() {
+		{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+		if($('input[name="agree_rodo2"]').is(':checked')) {
+		{% endif %} 
+		$.post('{{ module['content']['subscribe_url'] }}', 
+			{ 
+				email: $('#newsletter{{ id }} .email').val() 
+			}, function (e) {
+				if(e.error === 1) {
+					var r = confirm(e.message);
+					if (r == true) {
+					    $.post('{{ module['content']['unsubscribe_url'] }}', { 
+					    	email: $('#newsletter{{ id }} .email').val() 
+					    }, function (e) {
+					    	$('#newsletter{{ id }} .email').val('');
+					    	alert(e.message);
+					    }, 'json');
+					}
+				} else {
+					$('#newsletter{{ id }} .email').val('');
+					alert(e.message);
+				}
+			}
+		, 'json');
+		{% if (theme_options.get( 'rodo_status' ) == '1') %} 
+		} else {
+			$('#agree_rodo_form2 .submit').click();
+		}
+		{% endif %} 
+	}
+	
+	$('#newsletter{{ id }} .subscribe').click(Subscribe);
+	$('#newsletter{{ id }} .unsubscribe').click(Unsubscribe);
+	$('#newsletter{{ id }} .email').keypress(function (e) {
+	    if (e.which == 13) {
+	        Subscribe();
+	    }
+	});
+});
+</script>

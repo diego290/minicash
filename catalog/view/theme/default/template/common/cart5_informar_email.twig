@@ -1,0 +1,78 @@
+<div id="alertas-cart5"></div>
+
+<form id="form-dados-cart5" class="form-horizontal">
+	<div class="form-group">
+		<label for="inputEmail3" class="col-sm-2 control-label">&nbsp;</label>
+		<div class="col-sm-10">
+		Mantenha os dados de seu carrinho a salvo, basta informar o seu e-mail abaixo.
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="inputPassword3" class="col-sm-2 control-label">E-mail</label>
+		<div class="col-sm-10">
+		<input type="email" class="form-control" name="email" id="email-salvar-carrinh5" placeholder="Informe o seu e-mail!">
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+		<div class="checkbox">
+		<label>
+		  <input onclick="nao_exibir_mais_tela(this)" id="nao-exibir-mais" type="checkbox"> N&atilde;o exibir mais esta mensagem.
+		</label>
+		</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+		<button type="button" onclick="salvar_dados_carrinho()" class="btn btn-success">Salvar Carrinho</button> ou <a class="btn btn-info" href="{{ link_home }}">Continuar Comprando</a>
+		</div>
+	</div>
+</form>
+
+<script type="text/javascript">
+function validar_email_carrinho(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+function salvar_dados_carrinho() {
+	var email = $('#email-salvar-carrinh5').val();
+	if(validar_email_carrinho(email)){
+		$.ajax({
+			type: 'post',
+			url:  'index.php?route=extension/module/cart5/salvar',
+			data: $('#form-dados-cart5').serialize(),
+			dataType: 'json',
+			success: function(json) {
+				$('#alertas-cart5').html('');
+				if (json['erro']==true) {
+					$('#alertas-cart5').fadeIn().html('<div class="alert alert-danger">'+json['log']+'<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+				}
+				if (json['erro']==false) {
+					$('#form-dados-cart5').hide();
+					$('#alertas-cart5').fadeIn().html('<div class="alert alert-success">'+json['log']+'<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+					$.pgwCookie({ name: 'popupAbrirCart5', value: 'ok', expires: '1440' });
+					setTimeout(function(){ $.pgwModal('close'); }, 2000);
+				}
+			}
+		});
+	}else{
+		$('#email-salvar-carrinh5').focus();
+	}
+}
+
+function nao_exibir_mais_tela(dados){
+	if ($(dados).is(':checked')) {
+		$.pgwCookie({ name: 'popupAbrirCart5', value: 'ok', expires: '1440' });
+	} else {
+		$.pgwCookie({ name: 'popupAbrirCart5', value: null });
+	}
+}
+
+//fechar fechando
+$(document).bind('PgwModal::Close', function() {
+    $('.pgwModalBackdrop').remove();
+	$('.pgwModal').remove();
+});
+</script>
+</div>

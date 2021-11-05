@@ -1,0 +1,441 @@
+{#
+* https://andcommerce.com.br/
+#}
+{% set isHorizontal = layout_position is same as ('content_top') or layout_position is same as ('content_bottom') %}
+{% set isResponsive = settings['style']['responsive']['enabled'] ? true : false %}
+{% set responsivePos = settings['style']['responsive']['position'] is same as ('right') ? 'bf-right' : 'bf-left' %}
+
+<style type="text/css">
+    .bf-responsive.bf-active.bf-layout-id-{{ layout_id }} .bf-check-position {
+        top: {{ settings['style']['responsive']['offset']|number_format }}px;
+    }
+    .bf-responsive.bf-active.bf-layout-id-{{ layout_id }} .bf-btn-show, 
+    .bf-responsive.bf-active.bf-layout-id-{{ layout_id }} .bf-btn-reset {
+        top: {{ settings['style']['responsive']['offset']|number_format }}px;
+    }
+    .bf-layout-id-{{ layout_id }} .bf-btn-show {
+        {% if settings['style']['resp_show_btn_color']['val'] is defined %}
+            background: {{ settings['style']['resp_show_btn_color']['val'] }};
+        {% endif %}
+    }
+    .bf-layout-id-{{ layout_id }} .bf-btn-reset {
+        {% if settings['style']['resp_reset_btn_color']['val'] is defined %}
+            background: {{ settings['style']['resp_reset_btn_color']['val'] }};
+        {% endif %}
+    }
+    .bf-layout-id-{{ layout_id }} .bf-attr-header{
+        {{ settings['style']['block_header_background']['val'] is defined  ? 'background: ' ~ settings['style']['block_header_background']['val'] ~ ';':'' }}
+        {{ settings['style']['block_header_text']['val'] is defined ? 'color: ' ~ settings['style']['block_header_text']['val'] ~ ';':'' }} 
+    }
+    .bf-layout-id-{{ layout_id }} .bf-count{
+        {{ settings['style']['product_quantity_background']['val'] is defined ? 'background: ' ~ settings['style']['product_quantity_background']['val'] ~ ';':'' }} 
+        {{ settings['style']['product_quantity_text']['val'] is defined ? 'color: ' ~ settings['style']['product_quantity_text']['val'] ~ ';':'' }} 
+    }
+   .bf-layout-id-{{ layout_id }} .ui-widget-header {
+        {{ settings['style']['price_slider_area_background']['val'] is defined ? 'background: ' ~ settings['style']['price_slider_area_background']['val'] ~ ';':'' }} 
+    }
+   .bf-layout-id-{{ layout_id }} .ui-widget-content {
+        {{ settings['style']['price_slider_background']['val'] is defined ? 'background: ' ~ settings['style']['price_slider_background']['val'] ~ ';':'' }} 
+        {{ settings['style']['price_slider_border']['val'] is defined ? 'border:1px solid' ~ settings['style']['price_slider_border']['val'] ~ ';':'' }} 
+    }
+    .bf-layout-id-{{ layout_id }} .ui-state-default {
+        {{ settings['style']['price_slider_handle_background']['val'] is defined ? 'background:' ~ settings['style']['price_slider_handle_background']['val'] ~ ';':'' }} 
+        {{ settings['style']['price_slider_handle_border']['val'] is defined ? 'border:1px solid' ~ settings['style']['price_slider_handle_border']['val'] ~ ';':'' }} 
+   }
+    .bf-layout-id-{{ layout_id }} .bf-attr-group-header{
+        {{ settings['style']['group_block_header_background']['val'] is defined ? 'background:' ~ settings['style']['group_block_header_background']['val'] ~ ';':'' }} 
+        {{ settings['style']['group_block_header_text']['val'] is defined ? 'color:' ~ settings['style']['group_block_header_text']['val'] ~ ';':'' }} 
+    }
+    {% if settings['behaviour']['hide_empty'] %}>
+        .bf-layout-id-{{ layout_id }} .bf-row.bf-disabled, 
+        .bf-layout-id-{{ layout_id }} .bf-horizontal .bf-row.bf-disabled {
+            display: none;
+        }
+    {% endif %}
+</style>
+{% if filters|length %}
+<div class="bf-panel-wrapper{% if isResponsive %} bf-responsive {% endif %} {{ responsivePos }} bf-layout-id-{{ layout_id }}">
+    <div class="bf-btn-show"></div>
+    <a class="bf-btn-reset" onclick="BrainyFilter.reset();"></a>
+    <div class="box bf-check-position {% if isHorizontal %} bf-horizontal {% endif %}">
+        <div class="box-heading">{{ lang_block_title }} {% if isHorizontal %} <a class="bf-toggle-filter-arrow"></a><input type="reset" class="bf-buttonclear" onclick="BrainyFilter.reset();" value="{{ reset }}" /> {% endif %}</div>
+        <div class="brainyfilter-panel box-content {% if settings['submission']['hide_panel'] %} bf-hide-panel {% endif %}">
+            <form class="bf-form 
+                    {% if settings['behaviour']['product_count'] %} bf-with-counts {% endif %} 
+                    {% if sliding %} bf-with-sliding {% endif %}
+                    {% if settings['submission']['submit_type'] is same as ('button') and settings['submission']['submit_button_type'] is same as ('float') %} bf-with-float-btn {% endif %}
+                    {% if limit_height %} bf-with-height-limit {% endif %}"
+                    data-height-limit="{{ limit_height_opts }}"
+                    data-visible-items="{{ slidingOpts }}"
+                    data-hide-items="{{ slidingMin }}"
+                    data-submit-type="{{ settings['submission']['submit_type'] }}"
+                    data-submit-delay="{{ settings['submission']['submit_delay_time']|number_format }}"
+                    data-submit-hide-panel ="{{ settings['submission']['hide_panel']|number_format }}"
+                    data-resp-max-width="{{ settings['style']['responsive']['max_width']|number_format }}"
+                    data-resp-collapse="{{ settings['style']['responsive']['collapsed']|number_format }}"
+                    data-resp-max-scr-width ="{{ settings['style']['responsive']['max_screen_width']|number_format }}"
+                    method="get" action="index.php">
+                {% if currentRoute is same as ('product/search') %}
+                    <input type="hidden" name="route" value="product/search" />
+                {% else %}
+                    <input type="hidden" name="route" value="product/category" />
+                {% endif %}
+                {% if currentPath %}
+                    <input type="hidden" name="path" value="{{ currentPath }}" />
+                {% endif %}
+                {% if manufacturerId %}
+                    <input type="hidden" name="manufacturer_id" value="{{ manufacturerId }}" />
+                {% endif %}
+
+                {% for i, section in filters %}
+                        
+                    {% if section['type'] == 'price' %}
+                        {% set sliderType = section['control'] is same as ('slider_lbl_inp') ? 3 : (section['control'] is same as ('slider_lbl') ? 2 : 1) %}
+                        {% set inputType  = sliderType in [1, 3] ? 'text' : 'hidden' %}
+                        <div class="bf-attr-block bf-price-filter {% if isHorizontal and filters[i + 1] is defined and filters[i + 1]['type'] is same as ('search') %}bf-left-half{% endif %}">
+                        <div class="bf-attr-header {% if section['collapsed'] %} bf-collapse {% endif %} {% if not i %} bf-w-line {% endif %}">
+                            {{ lang_price }}<span class="bf-arrow"></span>
+                        </div>
+                        <div class="bf-attr-block-cont">
+                            <div class="bf-price-container box-content bf-attr-filter">
+                                {% if sliderType in [1, 3] %}
+                                <div class="bf-cur-symb">
+                                    <span class="bf-cur-symb-left">{{ currency_symbol }}</span>
+                                    <input type="text" class="bf-range-min" name="bfp_price_min" value="{{ lowerlimit }}" size="4" />
+                                    <span class="ndash">&#8211;</span>
+                                    <span class="bf-cur-symb-left">{{ currency_symbol }}</span>
+                                    <input type="text" class="bf-range-max" name="bfp_price_max" value="{{ upperlimit }}" size="4" /> 
+                                </div>
+                                {% else %}
+                                <input type="hidden" class="bf-range-min" name="bfp_price_min" value="{{ lowerlimit }}" />
+                                <input type="hidden" class="bf-range-max" name="bfp_price_max" value="{{ upperlimit }}" /> 
+                                {% endif %}
+                                <div class="bf-price-slider-container {% if sliderType is same as (2) or sliderType is same as (3) %} bf-slider-with-labels {% endif %}">
+                                    <div class="bf-slider-range" data-slider-type="{{ sliderType }}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                
+                    {% elseif section['type'] == 'search' %}
+                
+                        <div class="bf-attr-block bf-keywords-filter {% if isHorizontal and filters[i + 1] is defined and filters[i + 1]['type'] is same as ('price') %} bf-left-half {% endif %}">
+                        <div class="bf-attr-header{% if section['collapsed'] %} bf-collapse {% endif %} {% if not i %} bf-w-line {% endif %}">
+                            {{ lang_search }}<span class="bf-arrow"></span>
+                        </div>
+                        <div class="bf-attr-block-cont">
+                            <div class="bf-search-container bf-attr-filter">
+                                <div>
+                                    <input type="text" class="bf-search" name="bfp_search" value="{{ bfSearch }}" /> 
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        
+                    {% elseif section['type'] == 'category' %}
+                        
+                        <div class="bf-attr-block">
+                        <div class="bf-attr-header{% if section['collapsed'] %} bf-collapse {% endif %} {% if not i %} bf-w-line {% endif %}">
+                            {{ lang_categories }}<span class="bf-arrow"></span>
+                        </div>
+                        <div class="bf-attr-block-cont">
+                            {% set groupUID = 'c0' %}
+
+                            {% if section['control'] == 'select' %}
+                            <div class="bf-attr-filter bf-attr-{{ groupUID }} bf-row">
+                                <div class="bf-cell">
+                                    <select name="bfp_{{ groupUID }}">
+                                        <option value="" class="bf-default">{{ default_value_select }}</option>
+                                        {% for cat in section['values'] %}
+                                            {% set catId = cat['id'] %}
+                                            {% set isSelected = selected[groupUID] is defined and catId in selected[groupUID] %}
+                                            <option value="{{ catId }}" class="bf-attr-val" {% if isSelected %} selected="true" {% endif %}>
+                                                {% set level = '' %}
+                                                {% for i in 0..cat['level'] %}
+                                                    {% if i %}
+                                                        {% set level  = level ~ '-' %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {{level ~ ' ' ~ cat['name']}}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            {% else %}
+                                {% for cat in section['values'] %}
+                                    {% set catId = cat['id'] %}
+                                    <div class="bf-attr-filter bf-attr-{{ groupUID }} bf-row
+                                        {% if totals is defined and settings['behaviour']['hide_empty'] %}
+                                            {% set inStock = postponedCount or (totals[groupUID][catId] is defined and totals[groupUID][catId]) %}
+                                            {% set inSelected = selected[groupUID] is defined and catId in selected[groupUID] %}
+                                            {% if not inStock and not inSelected %}
+                                                bf-disabled
+                                            {% endif %}
+                                        {% endif %}">
+                                    <span class="bf-cell bf-c-1">
+                                        <input id="bf-attr-{{ groupUID ~ '_' ~ catId ~ '_' ~ layout_id }}"
+                                               data-filterid="bf-attr-{{ groupUID ~ '_' ~ catId }}"
+                                               type="{{ section['control'] }}" 
+                                               name="bfp_{{ groupUID }}{% if section['control'] is same as ('checkbox') %}{{ '_' ~ catId }}{% endif %}"
+                                               value="{{ catId }}" 
+                                               {% if selected[groupUID] is defined and catId in selected[groupUID] %} checked="true" {% endif %} />
+                                    </span>
+                                    <span class="bf-cell bf-c-2 bf-cascade-{{ cat['level'] }}">
+                                        <span class="bf-hidden bf-attr-val">{{ catId }}</span>
+                                        <label for="bf-attr-{{ groupUID ~ '_' ~ catId ~ '_' ~ layout_id }}">
+                                            {{ cat['name'] }}
+                                        </label>
+                                    </span>
+                                            <span class="bf-cell bf-c-3">
+                                                {% if totals is defined %}
+                                                    {% if totals[groupUID][catId] is not defined and selected[groupUID] is not defined %}
+                                                        {{ '' }}
+                                                    {% else %}
+                                                        {% set total = totals[groupUID][catId] is defined ? totals[groupUID][catId] : 0 %}
+                                                        {% set addPlusSign = selected[groupUID] is defined %}
+                                                        <span class="bf-count {{ not total ? 'bf-empty' : '' }}">{{ addPlusSign ? '+' : '' }}{{ total }}</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </span>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        </div>
+                
+                    {% else %}
+                        
+                        {% set curGroupId = null %}
+                        {% for groupId, group in section['array'] %}
+                            {% if group['group_id'] is defined and settings['behaviour']['attribute_groups'] %}
+                                {% if curGroupId != group['group_id'] %}
+                                    <div class="bf-attr-group-header">{{ group['group'] }}</div>
+                                    {% set curGroupId = group['group_id'] %}
+                                {% endif %}
+                            {% endif %}
+                            {% set collapsedGroup = false %}
+                            {% if group['attr_id'] and settings['behaviour']['sections']['attribute'][group['attr_id']] %}
+                                {% set collapsedGroup = settings['behaviour']['sections']['attribute'][group['attr_id']]['collapsed'] %}
+                            {% elseif group['option_id'] and settings['behaviour']['sections']['options'][group['option_id']] %}
+                                {% set collapsedGroup = settings['behaviour']['sections']['options'][group['option_id']]['collapsed'] %}
+                            {% elseif group['filter_id'] and settings['behaviour']['sections']['filter'][group['filter_id']] %}
+                                {% set collapsedGroup = settings['behaviour']['sections']['filter'][group['filter_id']]['collapsed'] %}
+                            {% endif %}
+                            {% set groupUID = section['type']|slice(0, 1) ~ groupId %}
+                            <div class="bf-attr-block{% if group['type'] in ['slider', 'slider_lbl', 'slider_lbl_inp'] %} bf-slider {% endif %}">
+                            <div class="bf-attr-header{% if section['collapsed']  or collapsedGroup %} bf-collapse {% endif %}{% if not i %} bf-w-line {% endif %}">
+                                {{ group['name'] ~ ' ' }}<span class="bf-arrow"></span>
+                            </div>
+                            <div class="bf-attr-block-cont">
+                                    {% set group = group['type'] is defined ? group|merge({'type': group['type']}) : group|merge({'type': 'checkbox'}) %}
+                                
+                                {% if group['type'] == 'select' %}
+                                
+                                    <div class="bf-attr-filter bf-attr-{{ groupUID }} bf-row">
+                                        <div class="bf-cell">
+                                            <select name="bfp_{{groupUID}}">
+                                                <option value="" class="bf-default">{{ default_value_select }}</option>
+                                                {% for value in group['values'] %}
+                                                    {% set isSelected = selected[groupUID] is defined and value['id'] in selected[groupUID] %}
+                                                    <option value="{{ value['id'] }}" class="bf-attr-val" {% if isSelected %} selected="true" {% endif %}
+                                                        {% if totals and totals[groupUID][value['id']] is not defined and  not isSelected %}
+                                                            disabled="disabled"
+                                                        {% endif %}
+                                                        {% if totals[groupUID][value['id']] is defined and not isSelected %}
+                                                            data-totals="{{ totals[groupUID][value['id']] is defined ? totals[groupUID][value['id']] : 0 }}"
+                                                        {% endif %} >
+                                                        {{ value['name'] }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                
+                                {% elseif group['type'] in ['slider', 'slider_lbl', 'slider_lbl_inp'] %}
+                                
+                                <div class="bf-attr-filter bf-attr-{{ groupUID }} bf-row">
+                                    <div class="bf-cell">
+                                        <div class="bf-slider-inputs">
+                                            {% set isMinSet = selected[groupUID]['min'] is defined %}
+                                            {% set isMaxSet = selected[groupUID]['max'] is defined %}
+                                            {% set sliderType = group['type'] is same as ('slider_lbl_inp') ? 3 : (group['type'] is same as ('slider_lbl') ? 2 : 1) %}
+                                            <input type="hidden" name="bfp_min_{{ groupUID }}" value="{{ isMinSet ? selected[groupUID]['min'] : 'na' }}" class="bf-attr-min-{{ groupUID }}" data-min-limit="{{ group['min']['s'] }}" />
+                                            <input type="hidden" name="bfp_max_{{ groupUID }}" value="{{ isMaxSet ? selected[groupUID]['max'] : 'na' }}" class="bf-attr-max-{{ groupUID }}" data-max-limit="{{ group['max']['s'] }}" /> 
+                                            {% if group['type'] != 'slider_lbl' %}
+                                                {% set minLbl = '' %}
+                                                {% set maxLbl = '' %}
+                                                {% if isMinSet %}
+                                                    {% for v in group['values'] %}
+                                                        {% if v['s'] == selected[groupUID]['min'] %}
+                                                            {% set minLbl = v['n'] %}
+                                                            {{ break }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                {% if isMaxSet %}
+                                                    {% for v in group['values'] %}
+                                                        {% if v['s'] == selected[groupUID]['max'] %}
+                                                            {% set maxLbl = v['n'] %}
+                                                            {{ break }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            <input type="text" name="" class="bf-slider-text-inp-min bf-slider-input" value="{{ minLbl }}" placeholder="{{ lang_empty_slider }}" />
+                                            <span class="ndash">&#8211;</span>
+                                            <input type="text" name="" class="bf-slider-text-inp-max bf-slider-input" value="{{ maxLbl }}" placeholder="{{ lang_empty_slider }}" />
+                                            {% endif %}
+                                        </div>
+                                        <div class="bf-slider-container-wrapper {% if sliderType is same as(2) or sliderType is same as (3) %} bf-slider-with-labels {% endif %}">
+                                            <div class="bf-slider-container" data-slider-group="{{ groupUID }}" data-slider-type="{{ sliderType }}"></div>
+                                        </div>
+                                    </div>  
+                                </div>
+                                
+                                {% elseif group['type'] is same as ('grid') %}
+                                
+                                <div class="bf-attr-filter bf-attr-{{ groupUID }} bf-row">
+                                    <div class="bf-grid">
+                                        {% for value in group['values'] %}
+                                            {% set valueId  = value['id'] %}
+                                        <div class="bf-grid-item">
+                                            <input id="bf-attr-{{ groupUID ~ '_' ~ valueId ~ '_' ~ layout_id }}" class="bf-hidden"
+                                                    data-filterid="bf-attr-{{ groupUID ~ '_' ~ valueId }}"
+                                                    type="radio" 
+                                                    name=""bfp_{{ groupUID }}"
+                                                    value="{{ valueId }}" 
+                                                    {% if selected[groupUID] is defined and valueId in selected[groupUID] %} checked="true" {% endif %} />
+                                            <label for="bf-attr-{{ groupUID ~ '_' ~ valueId ~ '_' ~ layout_id }}">
+                                                <img src="image/{{ value['image'] }}" alt="{{ value['name'] }}" />
+                                            </label>
+                                            <span class="bf-hidden bf-attr-val">{{ valueId }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                {% else %}
+                                
+                                    {% for value in group['values'] %}
+                                        {% set valueId  = value['id'] %}
+                                    <div class="bf-attr-filter bf-attr-{{ groupUID }} bf-row
+                                        {% if totals is defined and settings['behaviour']['hide_empty'] %}
+                                            {% set inStock = postponedCount or (totals[groupUID][valueId] is defined and totals[groupUID][valueId]) %}
+                                            {% set inSelected = selected[groupUID] is defined and valueId in selected[groupUID] %}
+                                            {% if not inStock and not inSelected %}
+                                                bf-disabled
+                                            {% endif %}
+                                        {% endif %}">
+                                        <span class="bf-cell bf-c-1">
+                                            <input id="bf-attr-{{ groupUID ~ '_' ~ valueId ~ '_' ~ layout_id }}"
+                                                   data-filterid="bf-attr-{{ groupUID ~ '_' ~ valueId }}"
+                                                   type="{{ group['type'] }}" 
+                                                   name="bfp_{{ groupUID }}{% if group['type'] is same as ('checkbox') %}{{ '_' ~ valueId }} {% endif %}"
+                                                   value="{{ valueId }}" 
+                                                   {% if selected[groupUID] is defined and valueId in selected[groupUID] %} checked="true" {% endif %} />
+                                        </span>
+                                        <span class="bf-cell bf-c-2 {% if section['type'] == 'rating' %} {{ 'bf-rating-' ~ valueId }} {% endif %}">
+                                            <span class="bf-hidden bf-attr-val">{{ valueId }}</span>
+                                            <label for="bf-attr-{{ groupUID ~ '_' ~ valueId ~ '_' ~ layout_id }}">
+                                                {% if section['type'] is same as ('option') %}
+                                                    {% if group['mode'] is same as ('img') or group['mode'] is same as('img_label') %}
+                                                        <img src="image/{{ value['image'] }}" alt="{{ value['name'] }}" />
+                                                    {% endif %}
+                                                    {% if group['mode'] is same as ('label') or group['mode'] is same as ('img_label') %}
+                                                        {{ value['name'] }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ value['name'] }}
+                                                {% endif %}
+                                            </label>
+                                        </span>
+                                        <span class="bf-cell bf-c-3">
+                                            {% if totals is defined %}
+                                                {% if totals is defined %}
+                                                    {% if totals[groupUID][valueId] is not defined and selected[groupUID] is not defined %}
+                                                        {{ '' }}
+                                                    {% else %}
+                                                        {% set total = totals[groupUID][valueId] is defined ? totals[groupUID][valueId] : 0 %}
+                                                        {% set addPlusSign = selected[groupUID] is defined %}
+                                                        <span class="bf-count {{ not total ? 'bf-empty' : '' }}">{{ addPlusSign ? '+' : '' }}{{ total }}</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                {% endfor %}
+                {% if not isHorizontal or settings['submission']['submit_type'] == 'button' %} <div class="bf-buttonclear-box"{% if isHorizontal and settings['submission']['submit_button_type'] == 'float' %} style="display:none;" {% endif %}>
+                         <input type="button" value="{{ lang_submit }}" class="btn btn-primary bf-buttonsubmit" onclick="BrainyFilter.sendRequest(jQuery(this));BrainyFilter.loadingAnimation();return false;" {% if settings['submission']['submit_button_type'] != 'fix' and settings['submission']['submit_type'] != 'button' %}style="display:none;" {% endif %} />
+                   {% if not isHorizontal %}<input type="reset" class="bf-buttonclear" onclick="BrainyFilter.reset();return false;" value="{{ reset }}" />{% endif %}  
+                </div> {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+var bfLang = {
+    show_more : '{{ lang_show_more }}',
+    show_less : '{{ lang_show_less }}',
+    empty_list : '{{ lang_empty_list }}'
+};
+BrainyFilter.requestCount = BrainyFilter.requestCount || {{ settings['behaviour']['product_count'] ? 'true' : 'false' }};
+BrainyFilter.requestPrice = BrainyFilter.requestPrice || {{ settings['behaviour']['sections']['price']['enabled'] ? 'true' : 'false' }};
+BrainyFilter.separateCountRequest = BrainyFilter.separateCountRequest || {{ postponedCount ? 'true' : 'false' }};
+BrainyFilter.min = BrainyFilter.min || {{ priceMin }};
+BrainyFilter.max = BrainyFilter.max || {{ priceMax }};
+BrainyFilter.lowerValue = BrainyFilter.lowerValue || {{ lowerlimit }}; 
+BrainyFilter.higherValue = BrainyFilter.higherValue || {{ upperlimit }};
+BrainyFilter.currencySymb = BrainyFilter.currencySymb || '{{ currency_symbol }}';
+BrainyFilter.hideEmpty = BrainyFilter.hideEmpty || {{ settings['behaviour']['hide_empty']|number_format }};
+BrainyFilter.baseUrl = BrainyFilter.baseUrl || "{{ base }}";
+BrainyFilter.currentRoute = BrainyFilter.currentRoute || "{{ currentRoute }}";
+BrainyFilter.selectors = BrainyFilter.selectors || {
+    'container' : '{{ settings['behaviour']['containerSelector'] }}',
+    'paginator' : '{{ settings['behaviour']['paginatorSelector'] }}'
+};
+{% if redirectToUrl %}
+BrainyFilter.redirectTo = BrainyFilter.redirectTo || "{{ redirectToUrl }}";
+{% endif %}
+jQuery(function() {
+    if (!BrainyFilter.isInitialized) {
+        BrainyFilter.isInitialized = true;
+        var def = jQuery.Deferred();
+        def.then(function() {
+            if('ontouchend' in document && jQuery.ui) {
+                jQuery('head').append('<script src="catalog/view/javascript/jquery.ui.touch-punch.min.js"></script' + '>');
+            }
+        });
+        if (typeof jQuery.fn.slider === 'undefined') {
+            jQuery.getScript('catalog/view/javascript/jquery-ui.slider.min.js', function(){
+                def.resolve();
+                jQuery('head').append('<link rel="stylesheet" href="catalog/view/theme/default/stylesheet/jquery-ui.slider.min.css" type="text/css" />');
+                BrainyFilter.init();
+            });
+        } else {
+            def.resolve();
+            BrainyFilter.init();
+        }
+    }
+});
+BrainyFilter.sliderValues = BrainyFilter.sliderValues || {};
+{% if filters|length %}
+    {% for i, section in filters %}
+        {% if section['array'] is defined and section['array']|length %}
+            {% for groupId, group in section['array'] %}
+                {% set groupUID = section['type']|slice(0, 1) ~ groupId %}
+                {% if group['type'] in ['slider', 'slider_lbl', 'slider_lbl_inp'] %}
+                    BrainyFilter.sliderValues['{{ groupUID }}'] = {{ group['values']|json_encode() }};
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</script>
+{% endif %}

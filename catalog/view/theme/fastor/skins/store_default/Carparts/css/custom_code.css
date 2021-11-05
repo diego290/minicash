@@ -1,0 +1,3 @@
+ @media (max-width: 991px) {
+   .responsive .breadcrumb .container h1, .responsive .breadcrumb ul, .responsive .breadcrumb ul a { color: #000 !important; }
+}

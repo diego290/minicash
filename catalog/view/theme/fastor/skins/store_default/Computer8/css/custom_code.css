@@ -1,0 +1,6 @@
+ .megamenu-background > div { padding-top: 1px;padding-bottom: 1px; }
+.header-type-2 #top .search_form { max-width: 242px; }
+.top-bar > .container { position: relative;margin-top: -1px !important; }
+#top .pattern > .container { padding-top: 11px;padding-bottom: 35px; }
+ul.megamenu > li { margin-right: 30px; }
+ul.megamenu .megamenu-label { left: -8px;top: -8px; }
